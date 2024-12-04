@@ -6,12 +6,12 @@ import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
 
+@Entity
+@Table(name = "users")
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Entity
-@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +23,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @Column
     private String password;
 
     @Override

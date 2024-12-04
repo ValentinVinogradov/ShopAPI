@@ -1,5 +1,6 @@
 package com.shopapi.shop.controller;
 
+import com.shopapi.shop.dto.AnswerRequestDTO;
 import com.shopapi.shop.impl.AnswerServiceImpl;
 import com.shopapi.shop.models.Answer;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,18 @@ public class AnswerController extends GenericController<Answer, Long>{
     public AnswerController(AnswerServiceImpl answerService) {
         super(answerService);
         this.answerService = answerService;
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<String> add(@RequestBody AnswerRequestDTO answerRequestDTO) {
+        answerService.add(answerRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Answer added successfully!");
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<String> update(@RequestBody AnswerRequestDTO answerRequestDTO) {
+        answerService.update(answerRequestDTO);
+        return ResponseEntity.status(HttpStatus.OK).body("Answer updated successfully!");
     }
 
     @GetMapping

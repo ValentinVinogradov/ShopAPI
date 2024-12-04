@@ -1,15 +1,13 @@
 package com.shopapi.shop.controller;
 
 
+import com.shopapi.shop.dto.QuestionRequestDTO;
 import com.shopapi.shop.impl.QuestionServiceImpl;
 import com.shopapi.shop.models.Answer;
 import com.shopapi.shop.models.Question;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,6 +19,18 @@ public class QuestionController extends GenericController<Question, Long> {
     public QuestionController(QuestionServiceImpl questionService) {
         super(questionService);
         this.questionService = questionService;
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<String> add(@RequestBody QuestionRequestDTO questionRequestDTO) {
+        questionService.add(questionRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Question added successfully!");
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestBody QuestionRequestDTO questionRequestDTO) {
+        questionService.update(questionRequestDTO);
+        return ResponseEntity.status(HttpStatus.OK).body("Question updated successfully!");
     }
 
     @GetMapping("/product/{productId}")

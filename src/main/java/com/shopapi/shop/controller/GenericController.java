@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@AllArgsConstructor
 public class GenericController<T, ID> {
     public final GenericService<T, ID> service;
+
+    public GenericController(GenericService<T, ID> service) {
+        this.service = service;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<T>> getAll() {

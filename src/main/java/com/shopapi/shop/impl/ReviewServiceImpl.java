@@ -30,20 +30,22 @@ public class ReviewServiceImpl extends AbstractService<Review, Long> implements 
         this.productRepository = productRepository;
     }
 
+
     public void add(ReviewRequestDTO reviewRequestDTO) {
         //todo обработка исключений
-
         User user = userRepository.findById(reviewRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Product product = productRepository.findById(reviewRequestDTO.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
-
         Review review = new Review();
-        review.setDate(DateUtils.getCurrentDateTime());
         review.setUser(user);
-        review.setRating(reviewRequestDTO.getRating());
         review.setProduct(product);
-        review.setComment(reviewRequestDTO.getComment());
+        review.setRating(reviewRequestDTO.getRating());
+        review.setContent(reviewRequestDTO.getContent());
+        review.setUsername(user.getUsername());
+        review.setDignities(reviewRequestDTO.getDignities());
+        review.setFlaws(reviewRequestDTO.getFlaws());
+        review.setDate(DateUtils.getCurrentDate());
 
         // Сохраняем в базу
         reviewRepository.save(review);
@@ -53,11 +55,13 @@ public class ReviewServiceImpl extends AbstractService<Review, Long> implements 
         Long userId = reviewRequestDTO.getUserId();
         Long productId = reviewRequestDTO.getProductId();
         Review exsistingReview = reviewRepository.findByUserIdAndProductId(userId, productId).orElseThrow(() -> new RuntimeException("Review not found"));
-        exsistingReview.setComment(reviewRequestDTO.getComment());
-        exsistingReview.setDate(DateUtils.getCurrentDateTime());
+        exsistingReview.setContent(reviewRequestDTO.getContent());
+        //todo изменение
         exsistingReview.setRating(reviewRequestDTO.getRating());
+        exsistingReview.setDignities(reviewRequestDTO.getDignities());
+        exsistingReview.setFlaws(reviewRequestDTO.getFlaws());
+        exsistingReview.setDate(DateUtils.getCurrentDate());
         reviewRepository.save(exsistingReview);
-
     }
 
 

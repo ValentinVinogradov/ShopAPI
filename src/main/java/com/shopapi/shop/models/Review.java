@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -27,17 +27,23 @@ public class Review {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username")
     private String username;
 
     @Column(name = "rating", nullable = false)
     private Integer rating;
 
-    @Column(name = "comment")
-    private String comment;
+    @Column(name = "dignities")
+    private String dignities;
+
+    @Column(name = "flaws")
+    private String flaws;
+
+    @Column(name = "content", nullable = false)
+    private String content;
 
     @Column(name = "date", nullable = false)
-    private LocalDateTime date;
+    private LocalDate date;
 
     //todo статус по желанию
 

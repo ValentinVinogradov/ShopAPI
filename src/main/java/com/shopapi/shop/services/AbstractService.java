@@ -5,9 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-@AllArgsConstructor
 public abstract class AbstractService<T, ID> implements GenericService<T, ID> {
     private final JpaRepository<T, ID> repository;
+
+    protected AbstractService(JpaRepository<T, ID> repository) {
+        this.repository = repository;
+    }
 
     public List<T> getAll () {
         return repository.findAll();

@@ -25,14 +25,14 @@ public class ReviewController extends GenericController<Review, Long> {
 
     }
 
-    @PostMapping("/")
-    public ResponseEntity<String> add(ReviewRequestDTO reviewRequestDTO) {
+    @PostMapping("/add")
+    public ResponseEntity<String> add(@RequestBody ReviewRequestDTO reviewRequestDTO) {
         reviewService.add(reviewRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Review added successful!");
     }
 
-    @PutMapping("/")
-    public ResponseEntity<String> update(ReviewRequestDTO reviewRequestDTO) {
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestBody ReviewRequestDTO reviewRequestDTO) {
         reviewService.update(reviewRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Review updated successful!");
     }

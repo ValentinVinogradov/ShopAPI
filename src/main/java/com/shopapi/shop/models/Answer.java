@@ -12,7 +12,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 public class Answer {
 
     @Id
@@ -27,11 +26,11 @@ public class Answer {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "answer", nullable = false)
-    private String answer;
+    @Column(name = "content", nullable = false)
+    private String content;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
