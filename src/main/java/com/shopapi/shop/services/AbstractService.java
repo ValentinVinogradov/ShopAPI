@@ -1,5 +1,6 @@
 package com.shopapi.shop.services;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -21,14 +22,17 @@ public abstract class AbstractService<T, ID> implements GenericService<T, ID> {
         return repository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void add(T entity) {
         repository.save(entity);
     }
 
+    @Transactional
     public void update(T entity) {
         repository.save(entity);
     }
 
+    @Transactional
     public void deleteById(ID id) {
         repository.deleteById(id);
     }

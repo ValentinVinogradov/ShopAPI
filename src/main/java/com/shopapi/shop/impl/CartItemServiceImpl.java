@@ -9,6 +9,7 @@ import com.shopapi.shop.repository.CartItemRepository;
 import com.shopapi.shop.repository.CartRepository;
 import com.shopapi.shop.repository.ProductRepository;
 import com.shopapi.shop.services.CartItemService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,10 +41,12 @@ public class CartItemServiceImpl implements CartItemService {
         return cartItemRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void updateCartItem(CartItem cartItem) {
         cartItemRepository.save(cartItem);
     }
 
+    @Transactional
     private Cart setCart(Long userId, Long cartId) {
         Cart cart;
         if (cartId != null) {
@@ -63,6 +66,7 @@ public class CartItemServiceImpl implements CartItemService {
         return cart;
     }
 
+    @Transactional
     public void addCartItem(CartItemRequestDTO cartItemRequestDTO) {
         Long userId = cartItemRequestDTO.getUserId();
         Long cartId = cartItemRequestDTO.getCartId();
@@ -90,6 +94,7 @@ public class CartItemServiceImpl implements CartItemService {
         cartRepository.save(cart);
     }
 
+    @Transactional
     public void deleteCartItem(CartItemRequestDTO cartItemRequestDTO) {
         Long cartId = cartItemRequestDTO.getCartId();
         Long productId = cartItemRequestDTO.getProductId();
@@ -115,6 +120,7 @@ public class CartItemServiceImpl implements CartItemService {
         }
     }
 
+    @Transactional
     public void updateCartItem(Long productId) {
 
     }
@@ -126,11 +132,13 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     //todo
+    @Transactional
     public void deleteAllItemsByCartId(Long cartId) {
         cartItemRepository.deleteAllByCartId(cartId);
     }
 
     //todo придумать че с этой хуйней делать
+    @Transactional
     public void updateQuantity(CartItem cartItem, int quantityChange) {
         int currentQuantity = cartItem.getQuantity();
         cartItem.setQuantity(currentQuantity + quantityChange);

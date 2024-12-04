@@ -11,6 +11,7 @@ import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.ReviewService;
 import com.shopapi.shop.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class ReviewServiceImpl extends AbstractService<Review, Long> implements 
         this.productRepository = productRepository;
     }
 
-
+    @Transactional
     public void add(ReviewRequestDTO reviewRequestDTO) {
         //todo обработка исключений
         User user = userRepository.findById(reviewRequestDTO.getUserId())
@@ -51,6 +52,7 @@ public class ReviewServiceImpl extends AbstractService<Review, Long> implements 
         reviewRepository.save(review);
     }
 
+    @Transactional
     public void update(ReviewRequestDTO reviewRequestDTO ) {
         Long userId = reviewRequestDTO.getUserId();
         Long productId = reviewRequestDTO.getProductId();

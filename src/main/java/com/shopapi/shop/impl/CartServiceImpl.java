@@ -12,6 +12,7 @@ import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.CartService;
 import com.shopapi.shop.services.PromocodeService;
 import com.shopapi.shop.utils.PriceUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class CartServiceImpl extends AbstractService<Cart, Long> implements Cart
         this.promocodeService = promocodeService;
     }
 
-
+    @Transactional
     public void createCart(Long userId) {
         // Проверяем, существует ли пользователь
         User user = userRepository.findById(userId)
@@ -52,6 +53,7 @@ public class CartServiceImpl extends AbstractService<Cart, Long> implements Cart
         cartRepository.save(cart);
     }
 
+    @Transactional
     public PromoCodeValidationStatus applyPromoCode(long cartId, String promoCode) {
         // Проверяем, существует ли корзина
         Cart cart = cartRepository.findById(cartId)
@@ -75,6 +77,7 @@ public class CartServiceImpl extends AbstractService<Cart, Long> implements Cart
     }
 
     @Override
+    @Transactional
     public void updateTotalPrice(Cart cart, BigDecimal price, CartTotalPriceOperation operation) {
         if (operation == CartTotalPriceOperation.ADD) {
             BigDecimal newTotalPrice = cart.getTotalPrice().add(price);

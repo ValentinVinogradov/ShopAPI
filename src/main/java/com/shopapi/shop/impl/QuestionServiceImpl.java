@@ -12,6 +12,7 @@ import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.QuestionService;
 import com.shopapi.shop.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class QuestionServiceImpl extends AbstractService<Question, Long> impleme
         this.productRepository = productRepository;
     }
 
+    @Transactional
     public void add(QuestionRequestDTO questionRequestDTO) {
         User user = userRepository.findById(questionRequestDTO.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
         Product product = productRepository.findById(questionRequestDTO.getProductId()).orElseThrow(() -> new EntityNotFoundException("Product not found"));
@@ -46,6 +48,7 @@ public class QuestionServiceImpl extends AbstractService<Question, Long> impleme
         questionRepository.save(question);
     }
 
+    @Transactional
     public void update(QuestionRequestDTO questionRequestDTO) {
         Long userId = questionRequestDTO.getUserId();
         Long productId = questionRequestDTO.getProductId();

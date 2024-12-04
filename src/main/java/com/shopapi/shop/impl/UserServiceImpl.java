@@ -4,6 +4,7 @@ import com.shopapi.shop.models.User;
 import com.shopapi.shop.repository.UserRepository;
 import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 
@@ -29,11 +30,13 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
     }
 
     @Override
+    @Transactional
     public void changePassword(long userId, String newPassword) {
         //todo change password
     }
 
     @Override
+    @Transactional
     public User authenticateUser(String email, String password) {
         return null; //todo в самом конце сделать аутентификацию
     }

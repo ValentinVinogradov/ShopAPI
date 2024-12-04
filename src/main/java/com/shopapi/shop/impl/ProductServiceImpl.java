@@ -30,6 +30,7 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
     }
 
     @Override
+    @Transactional
     public void add(Product product) {
         setDate(product);
         productRepository.save(product);

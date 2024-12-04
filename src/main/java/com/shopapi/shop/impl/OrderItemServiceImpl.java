@@ -3,6 +3,7 @@ package com.shopapi.shop.impl;
 import com.shopapi.shop.models.OrderItem;
 import com.shopapi.shop.repository.OrderItemRepository;
 import com.shopapi.shop.services.*;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,11 +29,13 @@ public class OrderItemServiceImpl extends AbstractService<OrderItem, Long> imple
     }
 
     @Override
+    @Transactional
     public void deleteAllItemsByContainerId(Long containerId) {
         itemAddiction.deleteAllItemsByContainerId(containerId, orderItemRepository);
     }
 
     @Override
+    @Transactional
     public void updateQuantity(Long itemId, int quantity) {
         itemAddiction.updateQuantity(itemId, quantity, orderItemRepository);
     }

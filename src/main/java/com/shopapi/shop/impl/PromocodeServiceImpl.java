@@ -4,6 +4,7 @@ import com.shopapi.shop.enums.PromoCodeValidationStatus;
 import com.shopapi.shop.models.Promocode;
 import com.shopapi.shop.repository.PromocodeRepository;
 import com.shopapi.shop.services.PromocodeService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,13 @@ public class PromocodeServiceImpl implements PromocodeService {
     private final PromocodeRepository promocodeRepository;
 
     @Override
+    @Transactional
     public Promocode createPromocode(Promocode promocode) {
         return promocodeRepository.save(promocode);
     }
 
     @Override
+    @Transactional
     public Promocode updatePromocode(Promocode promocode) {
         return null;
     }
@@ -42,6 +45,7 @@ public class PromocodeServiceImpl implements PromocodeService {
     }
 
     @Override
+    @Transactional
     public void deletePromocode(Long id) {
 
     }
