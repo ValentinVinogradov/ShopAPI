@@ -36,20 +36,22 @@ public class QuestionServiceImpl extends AbstractService<Question, Long> impleme
     }
 
     @Transactional
-    public void add(QuestionRequestDTO questionRequestDTO) {
+    @Override
+    public void addQuestion(QuestionRequestDTO questionRequestDTO) {
         User user = userRepository.findById(questionRequestDTO.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
         Product product = productRepository.findById(questionRequestDTO.getProductId()).orElseThrow(() -> new EntityNotFoundException("Product not found"));
         Question question = new Question();
         question.setUser(user);
         question.setProduct(product);
         question.setContent(questionRequestDTO.getContent());
-        question.setUsername(questionRequestDTO.getUsername() != null ? questionRequestDTO.getUsername() : "Anonymous");
+        question.setUsername(questionRequestDTO.getUsername());
         question.setDate(DateUtils.getCurrentDate());
         questionRepository.save(question);
     }
 
     @Transactional
-    public void update(QuestionRequestDTO questionRequestDTO) {
+    @Override
+    public void updateQuestion(QuestionRequestDTO questionRequestDTO) {
         Long userId = questionRequestDTO.getUserId();
         Long productId = questionRequestDTO.getProductId();
         Question exsistingQuestion = questionRepository.findQuestionByUserIdAndProductId(userId, productId).orElseThrow(() -> new EntityNotFoundException("Question not found"));

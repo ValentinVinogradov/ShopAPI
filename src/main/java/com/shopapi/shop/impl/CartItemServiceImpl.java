@@ -8,8 +8,10 @@ import com.shopapi.shop.models.Product;
 import com.shopapi.shop.repository.CartItemRepository;
 import com.shopapi.shop.repository.CartRepository;
 import com.shopapi.shop.repository.ProductRepository;
+import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.CartItemService;
 import jakarta.transaction.Transactional;
+import org.hibernate.service.internal.AbstractServiceRegistryImpl;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -37,14 +39,11 @@ public class CartItemServiceImpl implements CartItemService {
         this.cartService = cartService;
     }
 
+    @Override
     public CartItem getCartItemById(long id) {
         return cartItemRepository.findById(id).orElse(null);
     }
 
-    @Transactional
-    public void updateCartItem(CartItem cartItem) {
-        cartItemRepository.save(cartItem);
-    }
 
     @Transactional
     private Cart setCart(Long userId, Long cartId) {
@@ -67,6 +66,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Transactional
+    @Override
     public void addCartItem(CartItemRequestDTO cartItemRequestDTO) {
         Long userId = cartItemRequestDTO.getUserId();
         Long cartId = cartItemRequestDTO.getCartId();
@@ -95,6 +95,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Transactional
+    @Override
     public void deleteCartItem(CartItemRequestDTO cartItemRequestDTO) {
         Long cartId = cartItemRequestDTO.getCartId();
         Long productId = cartItemRequestDTO.getProductId();
@@ -120,11 +121,17 @@ public class CartItemServiceImpl implements CartItemService {
         }
     }
 
-    @Transactional
-    public void updateCartItem(Long productId) {
-
+    @Override
+    public void updateQuantity(CartItem cartItem, int quantityChange) {
+        int currentQuantity = cartItem.getQuantity();
+        cartItem.setQuantity(currentQuantity + quantityChange);
     }
 
+    //todo
+    @Transactional
+    public void updateCartItem(CartItem cartItem) {
+        cartItemRepository.save(cartItem);
+    }
 
     //todo
     public List<CartItem> getItemsByCartId(Long cartId) {
@@ -137,10 +144,4 @@ public class CartItemServiceImpl implements CartItemService {
         cartItemRepository.deleteAllByCartId(cartId);
     }
 
-    //todo придумать че с этой хуйней делать
-    @Transactional
-    public void updateQuantity(CartItem cartItem, int quantityChange) {
-        int currentQuantity = cartItem.getQuantity();
-        cartItem.setQuantity(currentQuantity + quantityChange);
-    }
 }

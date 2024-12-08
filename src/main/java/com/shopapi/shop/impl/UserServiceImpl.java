@@ -19,21 +19,33 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
 
 
     @Override
+    public void addUser(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    public void updateUsername(Long userId, String username) {
+        userRepository.updateUsername(userId, username);
+    }
+
+    @Override
+    public void updatePassword(Long userId, String password) {
+    }
+
+    @Override
+    public void updateEmail(Long userId, String email) {
+    }
+
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
 
-    @Override
     public boolean userExists(String email) {
         return userRepository.findByEmail(email) != null;
     }
 
-    @Override
-    @Transactional
-    public void changePassword(long userId, String newPassword) {
-        //todo change password
-    }
+
 
     @Override
     @Transactional

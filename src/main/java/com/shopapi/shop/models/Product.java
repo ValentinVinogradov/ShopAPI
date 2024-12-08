@@ -22,13 +22,16 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    @Column
     private String description;
 
     @Column(nullable = false)
     private BigDecimal currentPrice;
 
+    @Column
     private BigDecimal oldPrice;
 
+    @Column(nullable = false)
     private Integer stockQuantity;
 
     @Column(nullable = false)

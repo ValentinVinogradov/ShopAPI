@@ -37,6 +37,7 @@ public class CartServiceImpl extends AbstractService<Cart, Long> implements Cart
     }
 
     @Transactional
+    @Override
     public void createCart(Long userId) {
         // Проверяем, существует ли пользователь
         User user = userRepository.findById(userId)
@@ -54,6 +55,7 @@ public class CartServiceImpl extends AbstractService<Cart, Long> implements Cart
     }
 
     @Transactional
+    @Override
     public PromoCodeValidationStatus applyPromoCode(long cartId, String promoCode) {
         // Проверяем, существует ли корзина
         Cart cart = cartRepository.findById(cartId)
@@ -76,8 +78,8 @@ public class CartServiceImpl extends AbstractService<Cart, Long> implements Cart
         return PromoCodeValidationStatus.VALID;
     }
 
-    @Override
     @Transactional
+    @Override
     public void updateTotalPrice(Cart cart, BigDecimal price, CartTotalPriceOperation operation) {
         if (operation == CartTotalPriceOperation.ADD) {
             BigDecimal newTotalPrice = cart.getTotalPrice().add(price);

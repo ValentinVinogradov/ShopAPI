@@ -3,51 +3,38 @@ package com.shopapi.shop.impl;
 import com.shopapi.shop.enums.PromoCodeValidationStatus;
 import com.shopapi.shop.models.Promocode;
 import com.shopapi.shop.repository.PromocodeRepository;
+import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.PromocodeService;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
-public class PromocodeServiceImpl implements PromocodeService {
+public class PromocodeServiceImpl extends AbstractService<Promocode, Long> implements PromocodeService {
     private final PromocodeRepository promocodeRepository;
 
-    @Override
+    protected PromocodeServiceImpl(PromocodeRepository promocodeRepository) {
+        super(promocodeRepository);
+        this.promocodeRepository = promocodeRepository;
+    }
+
     @Transactional
-    public Promocode createPromocode(Promocode promocode) {
-        return promocodeRepository.save(promocode);
+    @Override
+    public void addPromocode(Promocode promocode) {
+        promocodeRepository.save(promocode);
     }
 
-    @Override
     @Transactional
-    public Promocode updatePromocode(Promocode promocode) {
-        return null;
-    }
-
     @Override
-    public List<Promocode> getAllPromocodes() {
-        return List.of();
-    }
-
-    @Override
-    public Promocode getPromocodeById(Long id) {
-        return promocodeRepository.findById(id).orElse(null);
+    public void updatePromocode(Promocode promocode) {
+        promocodeRepository.save(promocode);
     }
 
     @Override
     public Promocode getPromocodeByCode(String code) {
         return promocodeRepository.findByCode(code).orElse(null);
-    }
-
-    @Override
-    @Transactional
-    public void deletePromocode(Long id) {
-
     }
 
     @Override

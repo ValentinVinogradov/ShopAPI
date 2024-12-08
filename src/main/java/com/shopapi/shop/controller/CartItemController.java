@@ -13,11 +13,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/shop_api/v1/cart_items")
-public class CartItemController {
+public class CartItemController{
     private final CartItemServiceImpl cartItemService;
 
     public CartItemController(CartItemServiceImpl cartItemService) {
-//        super(cartItemService);
         this.cartItemService = cartItemService;
     }
 
@@ -42,23 +41,23 @@ public class CartItemController {
         }
     }
 
-    @PostMapping("/add_item")
+    @PostMapping("/")
     public ResponseEntity<String> addCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
         try {
             cartItemService.addCartItem(cartItemRequestDTO);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("Cart item added successfully."); // 201 Created
+                    .body("Cart item added successfully!"); // 201 Created
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Failed to add cart item: " + e.getMessage()); // 400 Bad Request
         }
     }
 
-    @PutMapping("/update")
+    @PutMapping("/")
     public ResponseEntity<String> updateCartItem(@RequestBody CartItem cartItem) {
         try {
             cartItemService.updateCartItem(cartItem);
-            return ResponseEntity.ok("Cart item updated successfully."); // 200 OK
+            return ResponseEntity.ok("Cart item updated successfully!"); // 200 OK
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Failed to update cart item: " + e.getMessage()); // 400 Bad Request
@@ -69,7 +68,7 @@ public class CartItemController {
     public ResponseEntity<String> deleteAllCartItemsByCartId(@PathVariable long cartId) {
         try {
             cartItemService.deleteAllItemsByCartId(cartId);
-            return ResponseEntity.ok("All items from cart deleted successfully."); // 200 OK
+            return ResponseEntity.ok("All items from cart deleted successfully!"); // 200 OK
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Failed to delete items: " + e.getMessage()); // 400 Bad Request
@@ -80,7 +79,7 @@ public class CartItemController {
     public ResponseEntity<String> deleteCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
         try {
             cartItemService.deleteCartItem(cartItemRequestDTO);
-            return ResponseEntity.ok("Cart item deleted successfully."); // 200 OK
+            return ResponseEntity.ok("Cart item deleted successfully!"); // 200 OK
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Failed to delete cart item: " + e.getMessage()); // 400 Bad Request

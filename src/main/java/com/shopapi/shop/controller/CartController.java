@@ -3,6 +3,7 @@ package com.shopapi.shop.controller;
 import com.shopapi.shop.enums.PromoCodeValidationStatus;
 import com.shopapi.shop.impl.CartServiceImpl;
 import com.shopapi.shop.models.Cart;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +19,9 @@ public class CartController {
     }
 
     @PostMapping("/create_cart/user/{userId}")
-    public void createCart(@PathVariable long userId) {
+    public ResponseEntity<String> createCart(@PathVariable long userId) {
         cartService.createCart(userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Cart created successfully");
     }
 
     @PostMapping("/{cartId}/apply_promo")

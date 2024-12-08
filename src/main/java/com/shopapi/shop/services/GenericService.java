@@ -7,9 +7,5 @@ public interface GenericService<T, ID> {
 
     T getById(ID id);
 
-    void add(T entity);
-
-    void update(T entity);
-
     void deleteById(ID id);
 }

@@ -32,7 +32,8 @@ public class ReviewServiceImpl extends AbstractService<Review, Long> implements 
     }
 
     @Transactional
-    public void add(ReviewRequestDTO reviewRequestDTO) {
+    @Override
+    public void addReview(ReviewRequestDTO reviewRequestDTO) {
         //todo обработка исключений
         User user = userRepository.findById(reviewRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -53,12 +54,12 @@ public class ReviewServiceImpl extends AbstractService<Review, Long> implements 
     }
 
     @Transactional
-    public void update(ReviewRequestDTO reviewRequestDTO ) {
+    @Override
+    public void updateReview(ReviewRequestDTO reviewRequestDTO) {
         Long userId = reviewRequestDTO.getUserId();
         Long productId = reviewRequestDTO.getProductId();
         Review exsistingReview = reviewRepository.findByUserIdAndProductId(userId, productId).orElseThrow(() -> new RuntimeException("Review not found"));
         exsistingReview.setContent(reviewRequestDTO.getContent());
-        //todo изменение
         exsistingReview.setRating(reviewRequestDTO.getRating());
         exsistingReview.setDignities(reviewRequestDTO.getDignities());
         exsistingReview.setFlaws(reviewRequestDTO.getFlaws());

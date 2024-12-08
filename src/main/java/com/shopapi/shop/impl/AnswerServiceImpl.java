@@ -32,7 +32,8 @@ public class AnswerServiceImpl extends AbstractService<Answer, Long> implements 
     }
 
     @Transactional
-    public void add(AnswerRequestDTO answerRequestDTO) {
+    @Override
+    public void addAnswer(AnswerRequestDTO answerRequestDTO) {
         User user = userRepository.findById(answerRequestDTO.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
         Question question = questionRepository.findById((answerRequestDTO.getQuestionId())).orElseThrow(() -> new EntityNotFoundException("Question not found"));
         Answer answer = new Answer();
@@ -45,7 +46,8 @@ public class AnswerServiceImpl extends AbstractService<Answer, Long> implements 
     }
 
     @Transactional
-    public void update(AnswerRequestDTO answerRequestDTO) {
+    @Override
+    public void updateAnswer(AnswerRequestDTO answerRequestDTO) {
         Long userId = answerRequestDTO.getUserId();
         Long questionId = answerRequestDTO.getQuestionId();
         Answer exsistingAnswer = answerRepository.findByUserIdAndQuestionId(userId, questionId).orElseThrow(() -> new EntityNotFoundException("Answer not found"));
@@ -53,7 +55,6 @@ public class AnswerServiceImpl extends AbstractService<Answer, Long> implements 
         exsistingAnswer.setDate(DateUtils.getCurrentDate());
         answerRepository.save(exsistingAnswer);
     }
-
 
     @Override
     public List<Answer> getAnswersByQuestionId(long questionId) {

@@ -24,19 +24,27 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
         this.productRepository = productRepository;
     }
 
+    @Override
+    public void addProduct(Product product) {
+        productRepository.save(product);
+    }
+
+    @Transactional
+    @Override
+    public void updateProduct(Product product) {
+        productRepository.save(product);
+    }
+
+    @Transactional
     private void setDate(Product product) {
         product.setLastDate(DateUtils.getCurrentDate());
         productRepository.save(product);
     }
 
-    @Override
-    @Transactional
-    public void add(Product product) {
-        setDate(product);
-        productRepository.save(product);
-    }
+
 
     @Transactional
+    @Override
     public void updateProductPrice(Long productId, BigDecimal newPrice) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -46,6 +54,7 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
     }
 
     @Transactional
+    @Override
     public void applyDiscount(Long productId, int discountPercentage) {
         // Получаем продукт из базы данных
         Product product = productRepository.findById(productId)
@@ -74,5 +83,4 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
     public List<Product> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
         return List.of();
     }
-
 }

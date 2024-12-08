@@ -13,23 +13,13 @@ public abstract class AbstractService<T, ID> implements GenericService<T, ID> {
         this.repository = repository;
     }
 
-    public List<T> getAll () {
-        return repository.findAll();
-        //todo условие на null
-    }
-
     public T getById(ID id) {
         return repository.findById(id).orElse(null);
     }
 
-    @Transactional
-    public void add(T entity) {
-        repository.save(entity);
-    }
-
-    @Transactional
-    public void update(T entity) {
-        repository.save(entity);
+    public List<T> getAll () {
+        return repository.findAll();
+        //todo условие на null
     }
 
     @Transactional

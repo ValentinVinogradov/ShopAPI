@@ -21,15 +21,15 @@ public class QuestionController extends GenericController<Question, Long> {
         this.questionService = questionService;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody QuestionRequestDTO questionRequestDTO) {
-        questionService.add(questionRequestDTO);
+    @PostMapping("/")
+    public ResponseEntity<String> addQuestion(@RequestBody QuestionRequestDTO questionRequestDTO) {
+        questionService.addQuestion(questionRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Question added successfully!");
     }
 
-    @PutMapping("/update")
+    @PutMapping("/")
     public ResponseEntity<String> update(@RequestBody QuestionRequestDTO questionRequestDTO) {
-        questionService.update(questionRequestDTO);
+        questionService.updateQuestion(questionRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Question updated successfully!");
     }
 

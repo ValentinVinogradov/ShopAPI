@@ -1,12 +1,12 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/shopdb
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
@@ -14,6 +14,3 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        cache:
-          use_second_level_cache: false
-          use_query_cache: false

@@ -21,18 +21,29 @@ public class ProductController extends GenericController<Product, Long> {
         this.productService = productService;
     }
 
-    @PutMapping("/{productId}/change_price")
-    public ResponseEntity<String> updateProductPrice(@PathVariable Long productId, @RequestParam BigDecimal newPrice) {
+    @PostMapping("/")
+    public ResponseEntity<String> addProduct(@RequestBody Product product) {
+        productService.addProduct(product);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Product added successfully!");
+    }
+
+    @PutMapping("/")
+    public ResponseEntity<String> updateProduct(@RequestBody Product product) {
+        productService.updateProduct(product);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Product updated successfully!");
+    }
+
+    @PatchMapping("/{productId}/change_price")
+    public ResponseEntity<String> updateProductPrice(@PathVariable Long productId, @RequestBody BigDecimal newPrice) {
         productService.updateProductPrice(productId, newPrice);
         return ResponseEntity.ok("Price changed to " + newPrice);
     }
 
-    @PostMapping("/{productId}/apply_discount")
-    public ResponseEntity<String> applyDiscount(@PathVariable long productId, @RequestParam int discountPercentage) {
+    @PutMapping("/{productId}/apply_discount")
+    public ResponseEntity<String> applyDiscount(@PathVariable long productId, @RequestBody int discountPercentage) {
         productService.applyDiscount(productId, discountPercentage);
         return ResponseEntity.ok("Discount successfully applied: " + discountPercentage + "%");
     }
-
 
     @GetMapping("/name/{name}")
     public ResponseEntity<Product> getProductByName(@PathVariable String name) {

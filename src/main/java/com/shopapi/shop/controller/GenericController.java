@@ -15,11 +15,6 @@ public class GenericController<T, ID> {
         this.service = service;
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<T>> getAll() {
-        return ResponseEntity.ok(service.getAll());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<T> getById(@PathVariable ID id) {
         T entity = service.getById(id);
@@ -30,17 +25,11 @@ public class GenericController<T, ID> {
         }
     }
 
-    @PostMapping("/")
-    public ResponseEntity<String> add(@RequestBody T entity) {
-        service.add(entity);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Added successfully"); // Статус 201 Created
+    @GetMapping("/")
+    public ResponseEntity<List<T>> getAll() {
+        return ResponseEntity.ok(service.getAll());
     }
 
-    @PutMapping("/")
-    public ResponseEntity<String> update(@RequestBody T entity) {
-        service.update(entity);
-        return ResponseEntity.ok("Updated successfully"); // Статус 200 OK
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable ID id) {

@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/shop_api/v1/answers")
 public class AnswerController extends GenericController<Answer, Long>{
+
     private final AnswerServiceImpl answerService;
 
     public AnswerController(AnswerServiceImpl answerService) {
@@ -19,19 +20,19 @@ public class AnswerController extends GenericController<Answer, Long>{
         this.answerService = answerService;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity<String> add(@RequestBody AnswerRequestDTO answerRequestDTO) {
-        answerService.add(answerRequestDTO);
+        answerService.addAnswer(answerRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Answer added successfully!");
     }
 
-    @PostMapping("/update")
+    @PostMapping("/")
     public ResponseEntity<String> update(@RequestBody AnswerRequestDTO answerRequestDTO) {
-        answerService.update(answerRequestDTO);
+        answerService.updateAnswer(answerRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Answer updated successfully!");
     }
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<Answer>> getAnswersByQuestionId(@RequestParam long questionId) {
         List<Answer> answers = answerService.getAnswersByQuestionId(questionId);
         if (answers.isEmpty()) {
@@ -39,7 +40,4 @@ public class AnswerController extends GenericController<Answer, Long>{
         }
         return ResponseEntity.ok(answers); // 200, если ответы найдены
     }
-
-
-
 }
