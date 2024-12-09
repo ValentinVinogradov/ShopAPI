@@ -8,10 +8,8 @@ import com.shopapi.shop.models.Product;
 import com.shopapi.shop.repository.CartItemRepository;
 import com.shopapi.shop.repository.CartRepository;
 import com.shopapi.shop.repository.ProductRepository;
-import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.CartItemService;
 import jakarta.transaction.Transactional;
-import org.hibernate.service.internal.AbstractServiceRegistryImpl;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

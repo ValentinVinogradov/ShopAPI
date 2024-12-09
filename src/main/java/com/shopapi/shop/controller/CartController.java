@@ -18,6 +18,9 @@ public class CartController {
         this.cartService = cartService;
     }
 
+//    @GetMapping("/user/{userId}")
+//    public ResponseEntity<Cart>
+
     @PostMapping("/create_cart/user/{userId}")
     public ResponseEntity<String> createCart(@PathVariable long userId) {
         cartService.createCart(userId);
