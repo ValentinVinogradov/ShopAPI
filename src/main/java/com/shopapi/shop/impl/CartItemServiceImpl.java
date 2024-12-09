@@ -76,7 +76,7 @@ public class CartItemServiceImpl implements CartItemService {
         // Проверяем, существует ли уже товар в корзине
         Product product = productRepository.findById(productId)
                         .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-        BigDecimal productPrice = product.getCurrentPrice();
+        BigDecimal productPrice = product.getPrice();
         CartItem existingCartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
 
         if (existingCartItem != null) {
@@ -100,7 +100,7 @@ public class CartItemServiceImpl implements CartItemService {
         Long productId = cartItemRequestDTO.getProductId();
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-        BigDecimal productPrice = product.getCurrentPrice();
+        BigDecimal productPrice = product.getPrice();
         Cart cart;
         CartItem existingCartItem = cartItemRepository.findByCartIdAndProductId(cartId, productId);
         if (existingCartItem != null) {
