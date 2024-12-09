@@ -66,6 +66,7 @@ public class CartItemServiceImpl implements CartItemService {
     @Transactional
     @Override
     public void addCartItem(CartItemRequestDTO cartItemRequestDTO) {
+
         Long userId = cartItemRequestDTO.getUserId();
         Long cartId = cartItemRequestDTO.getCartId();
         Long productId = cartItemRequestDTO.getProductId();
