@@ -34,7 +34,7 @@ public class Question {
     private String content;
 
     @Column(name = "date", nullable = false)
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
 
 
     @Override

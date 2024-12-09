@@ -35,7 +35,7 @@ public class Product {
     private Integer stockQuantity;
 
     @Column(nullable = false)
-    private LocalDate lastDate;
+    private LocalDate lastDate = LocalDate.now();
 
     @Override
     public final boolean equals(Object o) {

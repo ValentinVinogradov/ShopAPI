@@ -33,7 +33,7 @@ public class Answer {
     private String content;
 
     @Column(name = "date", nullable = false)
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
 
     @Override
     public final boolean equals(Object o) {
