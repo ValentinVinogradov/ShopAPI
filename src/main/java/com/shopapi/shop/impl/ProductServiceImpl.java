@@ -26,19 +26,19 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
 
     @Override
     public void addProduct(Product product) {
+        setDate(product);
         productRepository.save(product);
     }
 
     @Transactional
     @Override
     public void updateProduct(Product product) {
+        setDate(product);
         productRepository.save(product);
     }
 
-    @Transactional
     private void setDate(Product product) {
         product.setLastDate(DateUtils.getCurrentDate());
-        productRepository.save(product);
     }
 
 

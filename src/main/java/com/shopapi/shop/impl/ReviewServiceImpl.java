@@ -59,8 +59,8 @@ public class ReviewServiceImpl extends AbstractService<Review, Long> implements 
         System.out.println("присвоение достоинств");
         review.setFlaws(reviewRequestDTO.getFlaws());
         System.out.println("присвоение недостатков");
-//        review.setDate(DateUtils.getCurrentDate());
-//        System.out.println("присвоение даты");
+        review.setDate(DateUtils.getCurrentDate());
+        System.out.println("присвоение даты");
 
         System.out.println("сам отзыв");
         System.out.println(review);
