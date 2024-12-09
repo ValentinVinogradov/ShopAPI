@@ -29,7 +29,7 @@ public class CartItem {
     private Product product;
 
     @NonNull
-    @Column(nullable = false)
+    @Column(name = "quantity",nullable = false)
     private Integer quantity;
 
     @Override

@@ -22,10 +22,10 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "status",nullable = false)
     private String status;
 
-    @Column(nullable = false)
+    @Column(name = "total_price",nullable = false)
     private BigDecimal totalPrice;
 
     @Override

@@ -22,7 +22,7 @@ public class Cart {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "total_price",nullable = false)
     private BigDecimal totalPrice;
 
     @Override

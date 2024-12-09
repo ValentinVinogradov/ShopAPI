@@ -19,23 +19,23 @@ public class Promocode {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "code",nullable = false, unique = true)
     private String code; // Уникальный код промокода
 
-    @Column(nullable = false)
+    @Column(name = "discount_percentage", nullable = false)
     private int discountPercentage; // Скидка в процентах
 
-    @Column
+    @Column(name = "start_date")
     private LocalDateTime startDate; // Дата начала действия
 
-    @Column
+    @Column(name = "end_date")
     private LocalDateTime endDate; // Дата окончания действия
 
-    @Column
+    @Column(name = "usage_limit")
     private Integer usageLimit; // Лимит использования (null = неограниченный)
 
     //todo дописать
-    @Column
+    @Column(name = "used_count")
     private Integer usedCount = 0; // Количество использований
 
     @Override

@@ -19,22 +19,22 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column
+    @Column(name = "description")
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "price",nullable = false)
     private BigDecimal price;
 
-    @Column
+    @Column(name = "old_price")
     private BigDecimal oldPrice;
 
-    @Column(nullable = false)
+    @Column(name = "stock_quantity",nullable = false)
     private Integer stockQuantity;
 
-    @Column(nullable = false)
+    @Column(name = "last_date", nullable = false)
     private LocalDate lastDate;
 
     @Override
