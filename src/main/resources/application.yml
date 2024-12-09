@@ -13,5 +13,3 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  server:
-    port: ${PORT:8080}  # Укажите нужный порт, например, 8080
