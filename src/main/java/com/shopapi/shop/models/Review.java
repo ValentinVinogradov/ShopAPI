@@ -43,7 +43,7 @@ public class Review {
     private String content;
 
     @Column(name = "date", nullable = false)
-    private LocalDate date = LocalDate.now();
+    private LocalDate date;
 
     //todo статус по желанию
 
