@@ -26,7 +26,7 @@ public class Product {
     private String description;
 
     @Column(nullable = false)
-    private BigDecimal currentPrice;
+    private BigDecimal price;
 
     @Column
     private BigDecimal oldPrice;
@@ -35,7 +35,7 @@ public class Product {
     private Integer stockQuantity;
 
     @Column(nullable = false)
-    private LocalDate lastDate = LocalDate.now();
+    private LocalDate lastDate;
 
     @Override
     public final boolean equals(Object o) {

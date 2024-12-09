@@ -48,7 +48,7 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
     public void updateProductPrice(Long productId, BigDecimal newPrice) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-        product.setCurrentPrice(newPrice);
+        product.setPrice(newPrice);
         setDate(product);
         productRepository.save(product);
     }
@@ -61,11 +61,11 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         // Сохраняем старую цену
-        product.setOldPrice(product.getCurrentPrice());
+        product.setOldPrice(product.getPrice());
 
         // Рассчитываем новую цену с учетом скидки
-        BigDecimal discountedPrice = PriceUtils.calculateDiscountedPrice(product.getCurrentPrice(), discountPercentage);
-        product.setCurrentPrice(discountedPrice);
+        BigDecimal discountedPrice = PriceUtils.calculateDiscountedPrice(product.getPrice(), discountPercentage);
+        product.setPrice(discountedPrice);
 
         // Обновляем дату изменения
         setDate(product);
