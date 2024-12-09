@@ -42,7 +42,7 @@ public class Review {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "date", nullable = false)
+    @Column(name = "date")
     private LocalDate date;
 
     //todo статус по желанию
