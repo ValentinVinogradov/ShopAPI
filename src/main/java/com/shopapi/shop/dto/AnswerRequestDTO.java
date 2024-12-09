@@ -10,5 +10,4 @@ public class AnswerRequestDTO {
     Long questionId;
     Long userId;
     String content;
-    String username;
 }

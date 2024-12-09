@@ -26,7 +26,7 @@ public class AnswerController extends GenericController<Answer, Long>{
         return ResponseEntity.status(HttpStatus.CREATED).body("Answer added successfully!");
     }
 
-    @PostMapping("/")
+    @PutMapping("/")
     public ResponseEntity<String> update(@RequestBody AnswerRequestDTO answerRequestDTO) {
         answerService.updateAnswer(answerRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Answer updated successfully!");

@@ -40,13 +40,13 @@ public class UserController extends GenericController<User, Long> {
         return ResponseEntity.ok("Password updated successfully!");
     }
 
-    @PatchMapping("/{id}/username")
+    @PatchMapping("/{id}/email")
     public ResponseEntity<String> updateEmail(
             @PathVariable("id") Long userId,
             @RequestBody String email) {
 
         userService.updateEmail(userId, email);
-        return ResponseEntity.ok("Username updated successfully!");
+        return ResponseEntity.ok("Email updated successfully!");
     }
 
     @GetMapping("/email/{email}")
@@ -60,14 +60,14 @@ public class UserController extends GenericController<User, Long> {
         }
     }
 
-    //todo доработать
-    @GetMapping("/exists/{email}")
-    public ResponseEntity<String> userExists(@PathVariable String email) {
-        boolean exists = userService.userExists(email);
-        if (exists) {
-            return ResponseEntity.ok("User with email " + email + " exists."); // 200 OK с сообщением
-        } else {
-            return ResponseEntity.ok("User with email " + email + " does not exist."); // 200 OK с сообщением
-        }
-    }
+//    //todo доработать
+//    @GetMapping("/exists/{email}")
+//    public ResponseEntity<String> userExists(@PathVariable String email) {
+//        boolean exists = userService.userExists(email);
+//        if (exists) {
+//            return ResponseEntity.ok("User with email " + email + " exists."); // 200 OK с сообщением
+//        } else {
+//            return ResponseEntity.ok("User with email " + email + " does not exist."); // 200 OK с сообщением
+//        }
+//    }
 }

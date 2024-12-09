@@ -44,7 +44,7 @@ public class QuestionServiceImpl extends AbstractService<Question, Long> impleme
         question.setUser(user);
         question.setProduct(product);
         question.setContent(questionRequestDTO.getContent());
-        question.setUsername(questionRequestDTO.getUsername());
+        question.setUsername(user.getUsername());
         question.setDate(DateUtils.getCurrentDate());
         questionRepository.save(question);
     }

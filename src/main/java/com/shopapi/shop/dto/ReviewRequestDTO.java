@@ -15,6 +15,5 @@ public class ReviewRequestDTO {
     String content;
     String dignities;
     String flaws;
-    String username;
     LocalDate date;
 }

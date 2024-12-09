@@ -39,7 +39,7 @@ public class AnswerServiceImpl extends AbstractService<Answer, Long> implements 
         Answer answer = new Answer();
         answer.setUser(user);
         answer.setQuestion(question);
-        answer.setUsername(answerRequestDTO.getUsername() != null ? answerRequestDTO.getUsername() : "Anonymous");
+        answer.setUsername(user.getUsername());
         answer.setContent(answerRequestDTO.getContent());
         answer.setDate(DateUtils.getCurrentDate());
         answerRepository.save(answer);
