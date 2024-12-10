@@ -13,7 +13,6 @@ C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\sho
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\CartItemRequestDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\QuestionRequestDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\ReviewRequestDTO.java
-C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\ReviewResponseDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\enums\CartTotalPriceOperation.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\enums\PromoCodeValidationStatus.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\impl\AnswerServiceImpl.java
