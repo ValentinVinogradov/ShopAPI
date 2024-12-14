@@ -5,6 +5,8 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -36,6 +38,9 @@ public class Question {
     @Column(name = "date", nullable = false)
     private LocalDate date = LocalDate.now();
 
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<Answer> answers = new ArrayList<>();
 
     @Override
     public final boolean equals(Object o) {

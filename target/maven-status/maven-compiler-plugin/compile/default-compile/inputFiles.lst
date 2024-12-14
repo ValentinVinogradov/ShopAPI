@@ -1,6 +1,7 @@
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\controller\AnswerController.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\controller\CartController.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\controller\CartItemController.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\controller\FavouritesController.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\controller\GenericController.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\controller\OrderController.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\controller\OrderItemController.java
@@ -10,14 +11,21 @@ C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\sho
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\controller\ReviewController.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\controller\UserController.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\AnswerRequestDTO.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\AnswerResponseDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\CartItemRequestDTO.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\CartItemResponseDTO.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\FavouriteRequestDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\QuestionRequestDTO.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\QuestionResponseDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\ReviewRequestDTO.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\ReviewResponseDTO.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\UserResponseDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\enums\CartTotalPriceOperation.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\enums\PromoCodeValidationStatus.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\impl\AnswerServiceImpl.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\impl\CartItemServiceImpl.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\impl\CartServiceImpl.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\impl\FavouriteServiceImpl.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\impl\OrderItemServiceImpl.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\impl\OrderServiceImpl.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\impl\ProductServiceImpl.java
@@ -28,6 +36,8 @@ C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\sho
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\Answer.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\Cart.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\CartItem.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\Favourite.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\FavouriteResponseDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\Order.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\OrderItem.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\Product.java
@@ -38,6 +48,7 @@ C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\sho
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\repository\AnswerRepository.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\repository\CartItemRepository.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\repository\CartRepository.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\repository\FavouriteRepository.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\repository\OrderItemRepository.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\repository\OrderRepository.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\repository\ProductRepository.java
@@ -49,6 +60,7 @@ C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\sho
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\services\AnswerService.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\services\CartItemService.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\services\CartService.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\services\FavouriteService.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\services\GenericItemService.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\services\GenericService.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\services\ItemAddiction.java

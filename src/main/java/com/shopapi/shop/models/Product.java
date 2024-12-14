@@ -2,10 +2,15 @@ package com.shopapi.shop.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.vladmihalcea.hibernate.type.json.JsonType;
+import org.hibernate.annotations.Type;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +27,9 @@ public class Product {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "category", nullable = false)
+    private String category;
+
     @Column(name = "description")
     private String description;
 
@@ -33,6 +41,14 @@ public class Product {
 
     @Column(name = "stock_quantity",nullable = false)
     private Integer stockQuantity;
+
+//     Поле для хранения JSON-атрибутов
+    @Column(name = "attributes", columnDefinition = "JSONB")
+    @Type(JsonType.class)
+    private Map<String, Object> attributes = new HashMap<>();
+
+    @Column(name = "img")
+    private List<String> img;
 
     @Column(name = "last_date", nullable = false)
     private LocalDate lastDate;

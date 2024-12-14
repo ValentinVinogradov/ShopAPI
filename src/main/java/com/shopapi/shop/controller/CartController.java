@@ -1,25 +1,34 @@
 package com.shopapi.shop.controller;
 
+import com.shopapi.shop.dto.CartItemResponseDTO;
 import com.shopapi.shop.enums.PromoCodeValidationStatus;
+import com.shopapi.shop.impl.CartItemServiceImpl;
 import com.shopapi.shop.impl.CartServiceImpl;
 import com.shopapi.shop.models.Cart;
+import com.shopapi.shop.models.CartItem;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/shop_api/v1/carts")
 public class CartController {
     private final CartServiceImpl cartService;
 
-    public CartController(CartServiceImpl cartService) {
+    private final CartItemServiceImpl cartItemService;
+
+    public CartController(CartServiceImpl cartService,
+                          CartItemServiceImpl cartItemService) {
         this.cartService = cartService;
+        this.cartItemService = cartItemService;
     }
 
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<Cart>
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<CartItemResponseDTO>> getCartItemsFromCartByUserId(@PathVariable long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(cartService.getCartItemsByUserId(userId));
+    }
 
     @PostMapping("/create_cart/user/{userId}")
     public ResponseEntity<String> createCart(@PathVariable long userId) {

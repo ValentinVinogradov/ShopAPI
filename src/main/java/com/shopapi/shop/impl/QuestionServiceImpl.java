@@ -1,6 +1,9 @@
 package com.shopapi.shop.impl;
 
+import com.shopapi.shop.dto.AnswerResponseDTO;
 import com.shopapi.shop.dto.QuestionRequestDTO;
+import com.shopapi.shop.dto.QuestionResponseDTO;
+import com.shopapi.shop.dto.UserResponseDTO;
 import com.shopapi.shop.models.Answer;
 import com.shopapi.shop.models.Product;
 import com.shopapi.shop.models.Question;
@@ -8,7 +11,6 @@ import com.shopapi.shop.models.User;
 import com.shopapi.shop.repository.ProductRepository;
 import com.shopapi.shop.repository.QuestionRepository;
 import com.shopapi.shop.repository.UserRepository;
-import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.QuestionService;
 import com.shopapi.shop.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class QuestionServiceImpl extends AbstractService<Question, Long> implements QuestionService {
+public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final AnswerServiceImpl answerService;
     private final UserRepository userRepository;
@@ -28,11 +30,35 @@ public class QuestionServiceImpl extends AbstractService<Question, Long> impleme
                                AnswerServiceImpl answerService,
                                UserRepository userRepository,
                                ProductRepository productRepository) {
-        super(questionRepository);
         this.questionRepository = questionRepository;
         this.answerService = answerService;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+    }
+
+
+    public QuestionResponseDTO getQuestionById(long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new EntityNotFoundException("Question not found with ID: " + questionId));
+        User user = question.getUser();
+        UserResponseDTO userResponseDTO = new UserResponseDTO(user.getId(), user.getUsername());
+        List<Answer> answers = getAnswersByQuestionId(questionId);
+
+
+        // Преобразуем ответы в DTO
+        List<AnswerResponseDTO> answerDTOs = question.getAnswers().stream()
+                .map(answer -> new AnswerResponseDTO(answer.getId(), answer.getUsername(), answer.getContent(), answer.getDate()))
+                .toList();
+
+        // Возвращаем вопрос и ответы в виде DTO
+        return new QuestionResponseDTO(
+                question.getId(),
+                userResponseDTO,
+                question.getContent(),
+                question.getUsername(),
+                question.getDate(),
+                answerDTOs
+        );
     }
 
     @Transactional

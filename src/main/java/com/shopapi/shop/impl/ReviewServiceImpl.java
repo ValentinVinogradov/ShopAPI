@@ -35,34 +35,20 @@ public class ReviewServiceImpl extends AbstractService<Review, Long> implements 
     @Override
     public void addReview(ReviewRequestDTO reviewRequestDTO) {
         //todo обработка исключений
-        System.out.println("зашли в метод добавления отзыва");
         User user = userRepository.findById(reviewRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        System.out.println("получили пользователя");
         Product product = productRepository.findById(reviewRequestDTO.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
-        System.out.println("получили товар");
         Review review = new Review();
-        System.out.println("Создание отзыва пустого");
-        System.out.println(review);
         review.setUser(user);
-        System.out.println("присвоение пользователя");
         review.setProduct(product);
-        System.out.println("присвоение товара");
         review.setRating(reviewRequestDTO.getRating());
-        System.out.println("присвоение рейтинга");
         review.setContent(reviewRequestDTO.getContent());
-        System.out.println("присвоение содержания");
         review.setUsername(user.getUsername());
-        System.out.println("присвоение юзернейма");
         review.setDignities(reviewRequestDTO.getDignities());
-        System.out.println("присвоение достоинств");
         review.setFlaws(reviewRequestDTO.getFlaws());
-        System.out.println("присвоение недостатков");
         review.setDate(DateUtils.getCurrentDate());
-        System.out.println("присвоение даты");
 
-        System.out.println("сам отзыв");
         System.out.println(review);
         // Сохраняем в базу
         reviewRepository.save(review);

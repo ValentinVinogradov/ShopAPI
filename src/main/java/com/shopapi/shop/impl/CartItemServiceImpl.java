@@ -42,6 +42,14 @@ public class CartItemServiceImpl implements CartItemService {
         return cartItemRepository.findById(id).orElse(null);
     }
 
+    public List<CartItem> getItemsByCartId(Long cartId) {
+        return cartItemRepository.getAllByCartId(cartId);
+    }
+
+    @Transactional
+    public void deleteAllItemsByCartId(Long cartId) {
+        cartItemRepository.deleteAllByCartId(cartId);
+    }
 
     @Transactional
     private Cart setCart(Long userId, Long cartId) {
@@ -132,15 +140,5 @@ public class CartItemServiceImpl implements CartItemService {
         cartItemRepository.save(cartItem);
     }
 
-    //todo
-    public List<CartItem> getItemsByCartId(Long cartId) {
-        return cartItemRepository.getAllByCartId(cartId);
-    }
-
-    //todo
-    @Transactional
-    public void deleteAllItemsByCartId(Long cartId) {
-        cartItemRepository.deleteAllByCartId(cartId);
-    }
 
 }

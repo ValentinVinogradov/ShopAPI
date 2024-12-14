@@ -1,10 +1,13 @@
 package com.shopapi.shop.models;
 
+import com.shopapi.shop.dto.CartItemRequestDTO;
+import com.shopapi.shop.dto.CartItemResponseDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -24,6 +27,10 @@ public class Cart {
 
     @Column(name = "total_price",nullable = false)
     private BigDecimal totalPrice;
+
+    @OneToMany(mappedBy = "cart")
+    @ToString.Exclude
+    private List<CartItem> cartItems;
 
     @Override
     public final boolean equals(Object o) {

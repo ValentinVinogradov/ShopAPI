@@ -1,39 +1,46 @@
 package com.shopapi.shop.impl;
 
+import com.shopapi.shop.dto.AnswerResponseDTO;
+import com.shopapi.shop.dto.CartItemResponseDTO;
 import com.shopapi.shop.enums.CartTotalPriceOperation;
 import com.shopapi.shop.enums.PromoCodeValidationStatus;
 import com.shopapi.shop.models.Cart;
 import com.shopapi.shop.models.Promocode;
 import com.shopapi.shop.models.User;
 import com.shopapi.shop.repository.CartRepository;
-import com.shopapi.shop.repository.PromocodeRepository;
 import com.shopapi.shop.repository.UserRepository;
-import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.CartService;
-import com.shopapi.shop.services.PromocodeService;
 import com.shopapi.shop.utils.PriceUtils;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.util.List;
 
 
 @Service
-public class CartServiceImpl extends AbstractService<Cart, Long> implements CartService {
+public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final PromocodeServiceImpl promocodeService;
 
-    public CartServiceImpl(JpaRepository<Cart, Long> repository,
-                           CartRepository cartRepository,
+
+    public CartServiceImpl(CartRepository cartRepository,
                            UserRepository userRepository,
                            PromocodeServiceImpl promocodeService) {
-        super(repository);
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
         this.promocodeService = promocodeService;
+    }
+
+    @Override
+    public List<CartItemResponseDTO> getCartItemsByUserId(long userId) {
+        Cart cart = cartRepository.findByUserId(userId);
+        return cart.getCartItems().stream()
+                .map(cartItem -> new CartItemResponseDTO(userId, cart.getId(),
+                        cartItem.getProduct().getId(),
+                        cartItem.getId()))
+                .toList();
     }
 
     @Transactional
