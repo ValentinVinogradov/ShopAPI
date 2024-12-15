@@ -1,13 +1,14 @@
 package com.shopapi.shop.dto;
 
-import lombok.*;
+import lombok.Value;
 
 /**
  * DTO for {@link com.shopapi.shop.models.CartItem}
  */
 @Value
 public class CartItemRequestDTO {
+    Long id;
+    Long userId;
     Long cartId;
     Long productId;
-    Long userId;
 }

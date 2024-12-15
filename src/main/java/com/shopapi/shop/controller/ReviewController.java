@@ -1,6 +1,7 @@
 package com.shopapi.shop.controller;
 
 import com.shopapi.shop.dto.ReviewRequestDTO;
+import com.shopapi.shop.dto.ReviewResponseDTO;
 import com.shopapi.shop.impl.ReviewServiceImpl;
 import com.shopapi.shop.models.Review;
 import com.shopapi.shop.repository.ProductRepository;
@@ -13,16 +14,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/shop_api/v1/reviews")
-public class ReviewController extends GenericController<Review, Long> {
+public class ReviewController {
     private final ReviewServiceImpl reviewService;
 
 
-    public ReviewController(ReviewServiceImpl reviewService,
-                            UserRepository userRepository,
-                            ProductRepository productRepository) {
-        super(reviewService);
+    public ReviewController(ReviewServiceImpl reviewService) {
         this.reviewService = reviewService;
 
+    }
+
+    @GetMapping("/{reviewId}")
+    public ResponseEntity<ReviewResponseDTO> getReviewById(@PathVariable long reviewId) {
+        ReviewResponseDTO reviewResponseDTO = reviewService.getReviewById(reviewId);
+        return ResponseEntity.status(HttpStatus.OK).body(reviewResponseDTO);
     }
 
     @PostMapping("/")
@@ -38,22 +42,28 @@ public class ReviewController extends GenericController<Review, Long> {
     }
 
     @GetMapping("/product/{productId}")
-    public ResponseEntity<List<Review>> getReviewsByProductId(@PathVariable long productId) {
-        List<Review> reviews = reviewService.getReviewsByProductId(productId);
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByProductId(@PathVariable long productId) {
+        List<ReviewResponseDTO> reviewResponseDTOs = reviewService.getReviewsByProductId(productId);
 
-        if (reviews.isEmpty()) {
+        if (reviewResponseDTOs.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 если список пуст
         }
-        return ResponseEntity.ok(reviews); // 200 если данные найдены
+        return ResponseEntity.ok(reviewResponseDTOs); // 200 если данные найдены
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Review>> getReviewsByUserId(@PathVariable long userId) {
-        List<Review> reviews = reviewService.getReviewsByUserId(userId);
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByUserId(@PathVariable long userId) {
+        List<ReviewResponseDTO> reviewResponseDTOs = reviewService.getReviewsByUserId(userId);
 
-        if (reviews.isEmpty()) {
+        if (reviewResponseDTOs.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 если список пуст
         }
-        return ResponseEntity.ok(reviews); // 200 если данные найдены
+        return ResponseEntity.ok(reviewResponseDTOs); // 200 если данные найдены
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<String> deleteReviewById(@PathVariable long reviewId) {
+        reviewService.deleteReviewById(reviewId);
+        return ResponseEntity.status(HttpStatus.OK).body("Review deleted successfully");
     }
 }

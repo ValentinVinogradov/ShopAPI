@@ -10,8 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    //todo запрос
-    List<Question> findQuestionsByProductId(long productId);
-    List<Question> findQuestionsByUserId(long userId);
+    List<Question> findQuestionsByProduct_Id(long productId);
+    List<Question> findQuestionsByUser_Id(long userId);
     Optional<Question> findQuestionByUserIdAndProductId(long userId, long productId);
 }

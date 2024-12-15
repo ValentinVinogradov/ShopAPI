@@ -16,6 +16,17 @@ public class UserController extends GenericController<User, Long> {
         this.userService = userService;
     }
 
+    @GetMapping("/email/{email}")
+    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+        User user = userService.getUserByEmail(email);
+        if (user != null) {
+            return ResponseEntity.ok(user); // 200 OK с объектом User
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null); // 404 Not Found с сообщением
+        }
+    }
+
     @PostMapping("/")
     public ResponseEntity<String> addUser(@RequestBody User user) {
         userService.addUser(user);
@@ -49,16 +60,6 @@ public class UserController extends GenericController<User, Long> {
         return ResponseEntity.ok("Email updated successfully!");
     }
 
-    @GetMapping("/email/{email}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
-        User user = userService.getUserByEmail(email);
-        if (user != null) {
-            return ResponseEntity.ok(user); // 200 OK с объектом User
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(null); // 404 Not Found с сообщением
-        }
-    }
 
 //    //todo доработать
 //    @GetMapping("/exists/{email}")

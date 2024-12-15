@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    List<Review> getReviewsByProductId(long productId);
-    List<Review> getReviewsByUserId(long userId);
+    List<Review> findReviewsByProduct_Id(long productId);
+    List<Review> findReviewsByUser_Id(long userId);
     @Query("SELECT r FROM Review r WHERE r.user.id = :userId AND r.product.id = :productId")
     Optional<Review> findByUserIdAndProductId(@Param("userId") Long userId, @Param("productId") Long productId);
 }

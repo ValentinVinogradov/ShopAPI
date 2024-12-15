@@ -7,8 +7,8 @@ import lombok.Value;
  */
 @Value
 public class CartItemResponseDTO {
-    Long userId;
+    Long id;
     Long cartId;
     Long productId;
-    Long id;
+    Integer quantity;
 }

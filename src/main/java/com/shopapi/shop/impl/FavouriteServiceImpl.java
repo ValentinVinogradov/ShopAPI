@@ -1,9 +1,8 @@
 package com.shopapi.shop.impl;
 
-import com.shopapi.shop.dto.CartItemResponseDTO;
 import com.shopapi.shop.dto.FavouriteRequestDTO;
 import com.shopapi.shop.models.Favourite;
-import com.shopapi.shop.models.FavouriteResponseDTO;
+import com.shopapi.shop.dto.FavouriteResponseDTO;
 import com.shopapi.shop.models.Product;
 import com.shopapi.shop.models.User;
 import com.shopapi.shop.repository.FavouriteRepository;
@@ -53,7 +52,8 @@ public class FavouriteServiceImpl implements FavouriteService {
     }
 
     @Override
-    public void deleteFavourite(FavouriteRequestDTO favouriteRequestDTO) {
-        favouriteRepository.deleteByUserAndProduct(favouriteRequestDTO.getUserId(), favouriteRequestDTO.getProductId());
+    public void deleteFavouriteById(long favouriteId) {
+        favouriteRepository.deleteById(favouriteId);
+//        favouriteRepository.deleteByUserAndProduct(favouriteRequestDTO.getUserId(), favouriteRequestDTO.getProductId());
     }
 }

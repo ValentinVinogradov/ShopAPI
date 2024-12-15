@@ -1,9 +1,9 @@
-package com.shopapi.shop.models;
+package com.shopapi.shop.dto;
 
 import lombok.Value;
 
 /**
- * DTO for {@link Favourite}
+ * DTO for {@link com.shopapi.shop.models.Favourite}
  */
 @Value
 public class FavouriteResponseDTO {

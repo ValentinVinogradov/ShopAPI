@@ -1,6 +1,7 @@
 package com.shopapi.shop.impl;
 
 import com.shopapi.shop.dto.CartItemRequestDTO;
+import com.shopapi.shop.dto.CartItemResponseDTO;
 import com.shopapi.shop.enums.CartTotalPriceOperation;
 import com.shopapi.shop.models.Cart;
 import com.shopapi.shop.models.CartItem;
@@ -9,11 +10,12 @@ import com.shopapi.shop.repository.CartItemRepository;
 import com.shopapi.shop.repository.CartRepository;
 import com.shopapi.shop.repository.ProductRepository;
 import com.shopapi.shop.services.CartItemService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class CartItemServiceImpl implements CartItemService {
@@ -38,17 +40,21 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItem getCartItemById(long id) {
-        return cartItemRepository.findById(id).orElse(null);
+    public CartItemResponseDTO getCartItemById(long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
+        return new CartItemResponseDTO(cartItem.getId(),
+                cartItem.getCart().getId(),
+                cartItem.getProduct().getId(),
+                cartItem.getQuantity());
     }
 
-    public List<CartItem> getItemsByCartId(Long cartId) {
-        return cartItemRepository.getAllByCartId(cartId);
-    }
+//    public List<CartItem> getItemsByCartId(Long cartId) {
+//        return cartItemRepository.getAllByCartId(cartId);
+//    }
 
     @Transactional
     public void deleteAllItemsByCartId(Long cartId) {
-        cartItemRepository.deleteAllByCartId(cartId);
+        cartItemRepository.deleteAllByCart_Id(cartId);
     }
 
     @Transactional
@@ -59,12 +65,12 @@ public class CartItemServiceImpl implements CartItemService {
             cart = cartRepository.findById(cartId).orElse(null);
         } else {
 //          Если cartId не передан, ищем корзину по userId
-            cart = cartRepository.findByUserId(userId);
+            cart = cartRepository.findByUser_Id(userId);
         }
 
         if (cart == null) {
             cartService.createCart(userId);
-            cart = cartRepository.findByUserId(userId);
+            cart = cartRepository.findByUser_Id(userId);
 
         }
 
@@ -73,7 +79,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Transactional
     @Override
-    public void addCartItem(CartItemRequestDTO cartItemRequestDTO) {
+    public void addCartItem(@NotNull CartItemRequestDTO cartItemRequestDTO) {
 
         Long userId = cartItemRequestDTO.getUserId();
         Long cartId = cartItemRequestDTO.getCartId();
@@ -85,9 +91,12 @@ public class CartItemServiceImpl implements CartItemService {
         Product product = productRepository.findById(productId)
                         .orElseThrow(() -> new IllegalArgumentException("Product not found"));
         BigDecimal productPrice = product.getPrice();
-        CartItem existingCartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
 
-        if (existingCartItem != null) {
+//        CartItem existingCartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
+
+        if (cartItemRequestDTO.getId() != null) {
+            CartItem existingCartItem = cartItemRepository.findById(cartItemRequestDTO.getId()).
+                    orElseThrow(() -> new EntityNotFoundException(("Cart Item not found")));
             // Если товар уже есть в корзине, увеличиваем количество
             updateQuantity(existingCartItem, 1);
             cartItemRepository.save(existingCartItem); // Сохраняем изменения
@@ -103,14 +112,15 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Transactional
     @Override
-    public void deleteCartItem(CartItemRequestDTO cartItemRequestDTO) {
-        Long cartId = cartItemRequestDTO.getCartId();
-        Long productId = cartItemRequestDTO.getProductId();
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-        BigDecimal productPrice = product.getPrice();
-        Cart cart;
-        CartItem existingCartItem = cartItemRepository.findByCartIdAndProductId(cartId, productId);
+    public void deleteCartItem(@NotNull CartItemRequestDTO cartItemRequestDTO) {
+//        Long cartId = cartItemRequestDTO.getCartId();
+//        Long productId = cartItemRequestDTO.getProductId();
+//        Product product = productRepository.findById(cartItemRequestDTO.getProductId()).
+//                orElseThrow(() -> new EntityNotFoundException("Product not found"));
+//        BigDecimal productPrice = product.getPrice();
+        CartItem existingCartItem = cartItemRepository.findById(cartItemRequestDTO.getId()).
+                orElseThrow(() -> new EntityNotFoundException("Cart Item not found"));
+//        CartItem existingCartItem = cartItemRepository.findByCartIdAndProductId(cartId, productId);
         if (existingCartItem != null) {
             if (existingCartItem.getQuantity() > 1) {
                 updateQuantity(existingCartItem, -1);
@@ -119,17 +129,16 @@ public class CartItemServiceImpl implements CartItemService {
                 cartItemRepository.deleteById(existingCartItem.getId());
             }
 
-            cart = cartRepository.findById(cartId).orElse(null);
-            System.out.println(cart);
+            Cart cart = cartRepository.findById(cartItemRequestDTO.getCartId()).orElse(null);
             if (cart != null) {
-                cartService.updateTotalPrice(cart, productPrice, subtract);
+                cartService.updateTotalPrice(cart, existingCartItem.getProduct().getPrice(), subtract);
                 cartRepository.save(cart);
             }
         }
     }
 
     @Override
-    public void updateQuantity(CartItem cartItem, int quantityChange) {
+    public void updateQuantity(@NotNull CartItem cartItem, int quantityChange) {
         int currentQuantity = cartItem.getQuantity();
         cartItem.setQuantity(currentQuantity + quantityChange);
     }

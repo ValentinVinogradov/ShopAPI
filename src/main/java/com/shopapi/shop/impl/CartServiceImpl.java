@@ -1,6 +1,5 @@
 package com.shopapi.shop.impl;
 
-import com.shopapi.shop.dto.AnswerResponseDTO;
 import com.shopapi.shop.dto.CartItemResponseDTO;
 import com.shopapi.shop.enums.CartTotalPriceOperation;
 import com.shopapi.shop.enums.PromoCodeValidationStatus;
@@ -35,11 +34,12 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<CartItemResponseDTO> getCartItemsByUserId(long userId) {
-        Cart cart = cartRepository.findByUserId(userId);
+        Cart cart = cartRepository.findByUser_Id(userId);
         return cart.getCartItems().stream()
-                .map(cartItem -> new CartItemResponseDTO(userId, cart.getId(),
+                .map(cartItem -> new CartItemResponseDTO(cartItem.getId(),
+                        cartItem.getId(),
                         cartItem.getProduct().getId(),
-                        cartItem.getId()))
+                        cartItem.getQuantity()))
                 .toList();
     }
 
@@ -96,6 +96,10 @@ public class CartServiceImpl implements CartService {
             BigDecimal newTotalPrice = cart.getTotalPrice().subtract(price);
             cart.setTotalPrice(newTotalPrice);
         }
+    }
+
+    public boolean isCartExists(long userId) {
+        return !(cartRepository.findByUser_Id(userId) == null);
     }
 
 }

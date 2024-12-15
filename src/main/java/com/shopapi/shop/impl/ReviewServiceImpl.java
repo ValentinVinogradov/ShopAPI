@@ -1,6 +1,8 @@
 package com.shopapi.shop.impl;
 
 import com.shopapi.shop.dto.ReviewRequestDTO;
+import com.shopapi.shop.dto.ReviewResponseDTO;
+import com.shopapi.shop.dto.UserResponseDTO;
 import com.shopapi.shop.models.Product;
 import com.shopapi.shop.models.Review;
 import com.shopapi.shop.models.User;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ReviewServiceImpl extends AbstractService<Review, Long> implements ReviewService {
+public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
@@ -25,10 +27,58 @@ public class ReviewServiceImpl extends AbstractService<Review, Long> implements 
     public ReviewServiceImpl(ReviewRepository reviewRepository,
                              UserRepository userRepository,
                              ProductRepository productRepository) {
-        super(reviewRepository);
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+    }
+
+    @Override
+    public ReviewResponseDTO getReviewById(long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new EntityNotFoundException("Review not found"));
+        User user = review.getUser();
+        return new ReviewResponseDTO(review.getId(),
+                review.getProduct().getId(),
+                new UserResponseDTO(user.getId(), user.getUsername()),
+                review.getUsername(),
+                review.getRating(),
+                review.getDignities(),
+                review.getFlaws(),
+                review.getContent(),
+                review.getDate());
+    }
+
+    @Override
+    public List<ReviewResponseDTO> getReviewsByProductId(long productId) {
+        List<Review> reviews = reviewRepository.findReviewsByProduct_Id(productId);
+        return reviews.stream()
+                .map(review -> new ReviewResponseDTO(review.getId(),
+                        review.getProduct().getId(),
+                        new UserResponseDTO(review.getUser().getId(), review.getUser().getUsername()),
+                        review.getUsername(),
+                        review.getRating(),
+                        review.getDignities(),
+                        review.getFlaws(),
+                        review.getContent(),
+                        review.getDate()))
+                .toList();
+    }
+
+    @Override
+    public List<ReviewResponseDTO> getReviewsByUserId(long userId) {
+        List<Review> reviews = reviewRepository.findReviewsByUser_Id(userId);
+        User user = userRepository.findById(userId).
+                orElseThrow(() -> new EntityNotFoundException("User not found"));
+        return reviews.stream()
+                .map(review -> new ReviewResponseDTO(review.getId(),
+                        review.getProduct().getId(),
+                        new UserResponseDTO(user.getId(), user.getUsername()),
+                        review.getUsername(),
+                        review.getRating(),
+                        review.getDignities(),
+                        review.getFlaws(),
+                        review.getContent(),
+                        review.getDate()))
+                .toList();
     }
 
     @Transactional
@@ -68,15 +118,9 @@ public class ReviewServiceImpl extends AbstractService<Review, Long> implements 
         reviewRepository.save(exsistingReview);
     }
 
-
     @Override
-    public List<Review> getReviewsByProductId(long productId) {
-        return reviewRepository.getReviewsByProductId(productId);
-    }
-
-    @Override
-    public List<Review> getReviewsByUserId(long userId) {
-        return reviewRepository.getReviewsByUserId(userId);
+    public void deleteReviewById(long reviewId) {
+        reviewRepository.deleteById(reviewId);
     }
 
 

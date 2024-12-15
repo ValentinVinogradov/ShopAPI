@@ -1,6 +1,5 @@
 package com.shopapi.shop.models;
 
-import com.shopapi.shop.dto.CartItemRequestDTO;
 import com.shopapi.shop.dto.CartItemResponseDTO;
 import jakarta.persistence.*;
 import lombok.*;

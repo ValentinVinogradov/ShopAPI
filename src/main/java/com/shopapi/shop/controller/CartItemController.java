@@ -2,14 +2,12 @@ package com.shopapi.shop.controller;
 
 
 import com.shopapi.shop.dto.CartItemRequestDTO;
+import com.shopapi.shop.dto.CartItemResponseDTO;
 import com.shopapi.shop.impl.CartItemServiceImpl;
 import com.shopapi.shop.models.CartItem;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 @RequestMapping("/shop_api/v1/cart_items")
@@ -21,25 +19,21 @@ public class CartItemController{
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CartItem> getCartItemById(@PathVariable long id) {
-        CartItem cartItem = cartItemService.getCartItemById(id);
-        if (cartItem != null) {
-            return ResponseEntity.ok(cartItem); // 200 OK
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 Not Found
-        }
+    public ResponseEntity<CartItemResponseDTO> getCartItemById(@PathVariable long id) {
+        CartItemResponseDTO cartItemResponseDTO = cartItemService.getCartItemById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(cartItemResponseDTO);
     }
 
-    @GetMapping("/cart/{cartId}")
-    public ResponseEntity<List<CartItem>> getCartItemsByCartId(@PathVariable long cartId) {
-        List<CartItem> cartItems = cartItemService.getItemsByCartId(cartId);
-        if (!cartItems.isEmpty()) {
-            return ResponseEntity.ok(cartItems); // 200 OK
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.emptyList()); // 404 Not Found
-        }
-    }
+//    @GetMapping("/cart/{cartId}")
+//    public ResponseEntity<List<CartItem>> getCartItemsByCartId(@PathVariable long cartId) {
+//        List<CartItem> cartItems = cartItemService.getItemsByCartId(cartId);
+//        if (!cartItems.isEmpty()) {
+//            return ResponseEntity.ok(cartItems); // 200 OK
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                    .body(Collections.emptyList()); // 404 Not Found
+//        }
+//    }
 
     @PostMapping("/")
     public ResponseEntity<String> addCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
@@ -75,7 +69,7 @@ public class CartItemController{
         }
     }
 
-    @DeleteMapping("/delete_item")
+    @DeleteMapping("/")
     public ResponseEntity<String> deleteCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
         try {
             cartItemService.deleteCartItem(cartItemRequestDTO);

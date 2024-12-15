@@ -1,6 +1,7 @@
 package com.shopapi.shop.controller;
 
 import com.shopapi.shop.dto.AnswerRequestDTO;
+import com.shopapi.shop.dto.AnswerResponseDTO;
 import com.shopapi.shop.impl.AnswerServiceImpl;
 import com.shopapi.shop.models.Answer;
 import org.springframework.http.HttpStatus;
@@ -11,14 +12,34 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/shop_api/v1/answers")
-public class AnswerController extends GenericController<Answer, Long>{
+public class AnswerController{
 
     private final AnswerServiceImpl answerService;
 
     public AnswerController(AnswerServiceImpl answerService) {
-        super(answerService);
         this.answerService = answerService;
     }
+
+    @GetMapping("/{answerId}")
+    public ResponseEntity<AnswerResponseDTO> getAnswerById(@PathVariable long answerId) {
+        AnswerResponseDTO answerResponseDTO = answerService.getAnswerById(answerId);
+        return ResponseEntity.status(HttpStatus.OK).body(answerResponseDTO);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<AnswerResponseDTO>> getAnswersByUserId(@PathVariable long userId) {
+        List<AnswerResponseDTO> answerResponseDTOs = answerService.getAnswersByUserId(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(answerResponseDTOs);
+    }
+
+//    @GetMapping("/question/{questionId}")
+//    public ResponseEntity<List<Answer>> getAnswersByQuestionId(@PathVariable long questionId) {
+//        List<Answer> answers = answerService.getAnswersByQuestionId(questionId);
+//        if (answers.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404, если ответы не найдены
+//        }
+//        return ResponseEntity.ok(answers); // 200, если ответы найдены
+//    }
 
     @PostMapping("/")
     public ResponseEntity<String> add(@RequestBody AnswerRequestDTO answerRequestDTO) {
@@ -32,12 +53,10 @@ public class AnswerController extends GenericController<Answer, Long>{
         return ResponseEntity.status(HttpStatus.OK).body("Answer updated successfully!");
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<Answer>> getAnswersByQuestionId(@RequestParam long questionId) {
-        List<Answer> answers = answerService.getAnswersByQuestionId(questionId);
-        if (answers.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404, если ответы не найдены
-        }
-        return ResponseEntity.ok(answers); // 200, если ответы найдены
+
+    @DeleteMapping("/{answerId}")
+    public ResponseEntity<String> deleteAnswerById(@PathVariable long answerId) {
+        answerService.deleteAnswerById(answerId);
+        return ResponseEntity.status(HttpStatus.OK).body("Answer deleted successfully!");
     }
 }

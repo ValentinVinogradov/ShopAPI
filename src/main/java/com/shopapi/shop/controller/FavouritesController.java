@@ -2,7 +2,7 @@ package com.shopapi.shop.controller;
 
 import com.shopapi.shop.dto.FavouriteRequestDTO;
 import com.shopapi.shop.impl.FavouriteServiceImpl;
-import com.shopapi.shop.models.FavouriteResponseDTO;
+import com.shopapi.shop.dto.FavouriteResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +35,9 @@ public class FavouritesController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Favourite added successfully!");
     }
 
-    @DeleteMapping("/")
-    public ResponseEntity<String> deleteFavourite(@RequestBody FavouriteRequestDTO favouriteRequestDTO) {
-        favouriteService.deleteFavourite(favouriteRequestDTO);
+    @DeleteMapping("/{favouriteId}")
+    public ResponseEntity<String> deleteFavourite(@PathVariable long favouriteId) {
+        favouriteService.deleteFavouriteById(favouriteId);
         return ResponseEntity.status(HttpStatus.OK).body("Favourite deleted successfully!");
     }
 }

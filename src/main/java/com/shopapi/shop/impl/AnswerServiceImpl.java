@@ -1,6 +1,8 @@
 package com.shopapi.shop.impl;
 
 import com.shopapi.shop.dto.AnswerRequestDTO;
+import com.shopapi.shop.dto.AnswerResponseDTO;
+import com.shopapi.shop.dto.UserResponseDTO;
 import com.shopapi.shop.models.Answer;
 import com.shopapi.shop.models.Question;
 import com.shopapi.shop.models.User;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class AnswerServiceImpl extends AbstractService<Answer, Long> implements AnswerService {
+public class AnswerServiceImpl implements AnswerService {
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
@@ -25,11 +27,41 @@ public class AnswerServiceImpl extends AbstractService<Answer, Long> implements 
     public AnswerServiceImpl(AnswerRepository answerRepository,
                              UserRepository userRepository,
                              QuestionRepository questionRepository) {
-        super(answerRepository);
         this.answerRepository = answerRepository;
         this.userRepository = userRepository;
         this.questionRepository = questionRepository;
     }
+
+    @Override
+    public AnswerResponseDTO getAnswerById(long answerId) {
+        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new EntityNotFoundException("Answer not found"));
+        User user = answer.getUser();
+        UserResponseDTO userResponseDTO = new UserResponseDTO(user.getId(), user.getUsername());
+        return new AnswerResponseDTO(answerId,
+                userResponseDTO,
+                answer.getUsername(),
+                answer.getContent(),
+                answer.getDate());
+    }
+
+    @Override
+    public List<AnswerResponseDTO> getAnswersByUserId(long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        UserResponseDTO userResponseDTO = new UserResponseDTO(user.getId(), user.getUsername());
+        List<Answer> answers = answerRepository.findAnswersByUser_Id(userId);
+        return answers.stream()
+                .map(answer -> new AnswerResponseDTO(answer.getId(),
+                        userResponseDTO,
+                        answer.getUsername(),
+                        answer.getContent(),
+                        answer.getDate()))
+                .toList();
+    }
+
+//    @Override
+//    public List<Answer> getAnswersByQuestionId(long questionId) {
+//        return answerRepository.findAnswersByQuestionId(questionId);
+//    }
 
     @Transactional
     @Override
@@ -57,7 +89,7 @@ public class AnswerServiceImpl extends AbstractService<Answer, Long> implements 
     }
 
     @Override
-    public List<Answer> getAnswersByQuestionId(long questionId) {
-        return answerRepository.findAnswersByQuestionId(questionId);
+    public void deleteAnswerById(long answerId) {
+        answerRepository.deleteById(answerId);
     }
 }

@@ -15,6 +15,7 @@ C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\sho
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\CartItemRequestDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\CartItemResponseDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\FavouriteRequestDTO.java
+C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\FavouriteResponseDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\QuestionRequestDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\QuestionResponseDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\dto\ReviewRequestDTO.java
@@ -37,7 +38,6 @@ C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\sho
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\Cart.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\CartItem.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\Favourite.java
-C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\FavouriteResponseDTO.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\Order.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\OrderItem.java
 C:\Users\valya\IdeaProjects\SpringProjects\ShopAPI\src\main\java\com\shopapi\shop\models\Product.java

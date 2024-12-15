@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class ReviewResponseDTO {
     Long id;
     Long productId;
-    Long userId;
+    UserResponseDTO user;
     String username;
     Integer rating;
     String dignities;

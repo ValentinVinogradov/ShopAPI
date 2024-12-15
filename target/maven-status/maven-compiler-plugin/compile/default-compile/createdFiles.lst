@@ -62,6 +62,7 @@ com\shopapi\shop\impl\UserServiceImpl.class
 com\shopapi\shop\dto\CartItemRequestDTO.class
 com\shopapi\shop\services\AnswerService.class
 com\shopapi\shop\services\ItemAddiction.class
+com\shopapi\shop\dto\FavouriteResponseDTO.class
 com\shopapi\shop\services\FavouriteService.class
 com\shopapi\shop\controller\UserController.class
 com\shopapi\shop\dto\ReviewRequestDTO.class
@@ -74,5 +75,4 @@ com\shopapi\shop\controller\AnswerController.class
 com\shopapi\shop\repository\UserRepository.class
 com\shopapi\shop\services\ReviewService.class
 com\shopapi\shop\services\GenericService.class
-com\shopapi\shop\models\FavouriteResponseDTO.class
 com\shopapi\shop\models\Favourite.class

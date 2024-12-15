@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Value
 public class AnswerResponseDTO {
     Long id;
+    UserResponseDTO user;
     String username;
     String content;
     LocalDate date;
