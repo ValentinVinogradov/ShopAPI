@@ -27,9 +27,29 @@ jobs:
         java-version: '23'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
 
-    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+    # Установить переменные окружения для базы данных
+    - name: Set environment variables
+      env:
+        DB_URL: ${{ secrets.DB_URL }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: echo "Environment variables set"
+
+    # Build с Maven, передавая параметры
+    - name: Build with Maven
+      env:
+        DB_URL: ${{ secrets.DB_URL }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: mvn -B package --file pom.xml \
+           -Ddb.url=${{ secrets.DB_URL }} \
+           -Ddb.port=${{ secrets.DB_PORT }} \
+           -Ddb.username=${{ secrets.DB_USERNAME }} \
+           -Ddb.password=${{ secrets.DB_PASSWORD }}
+
+    # Optional: Update dependency graph
     - name: Update dependency graph
       uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
