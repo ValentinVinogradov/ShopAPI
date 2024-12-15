@@ -31,24 +31,21 @@ jobs:
     # Установить переменные окружения для базы данных
     - name: Set environment variables
       env:
-        DB_URL: ${{ secrets.DB_URL }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-        DB_USERNAME: ${{ secrets.DB_USERNAME }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+        SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+        SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       run: echo "Environment variables set"
 
     # Build с Maven, передавая параметры
     - name: Build with Maven
       env:
-        DB_URL: ${{ secrets.DB_URL }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-        DB_USERNAME: ${{ secrets.DB_USERNAME }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+        DB_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+        DB_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       run: mvn -B package --file pom.xml \
-           -Ddb.url=${{ secrets.DB_URL }} \
-           -Ddb.port=${{ secrets.DB_PORT }} \
-           -Ddb.username=${{ secrets.DB_USERNAME }} \
-           -Ddb.password=${{ secrets.DB_PASSWORD }}
+         -Ddb.url=${{ secrets.SPRING_DATASOURCE_URL }} \
+         -Ddb.username=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+         -Ddb.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
 
     # Optional: Update dependency graph
     - name: Update dependency graph
