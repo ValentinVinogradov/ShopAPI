@@ -8,6 +8,8 @@ WORKDIR /app
 # Копируем исходные файлы в контейнер
 COPY . /app
 
+RUN chmod +x ./mvnw
+
 # Скачать зависимости и собрать JAR файл
 RUN ./mvnw clean package
 
