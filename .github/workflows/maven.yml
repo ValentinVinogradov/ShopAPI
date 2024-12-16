@@ -38,6 +38,7 @@ jobs:
         SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+        
       run: echo "Environment variables set"
 
     # Build с Maven, передавая параметры
@@ -46,6 +47,16 @@ jobs:
         SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-      run: mvn -B package --file pom.xml
+      run: mvn -B clean package --file pom.xml
 
-    # Optional: Update dependency graph
+    # Log in to Docker Registry
+    - name: Log in to Docker Registry
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+    # Build Docker image
+    - name: Build Docker image
+      run: docker build -t my-app:latest .
+
+    # Push Docker image to Render
+    - name: Push Docker image to Render
+      run: docker tag my-app:latest docker.registry.render.com/prj-ct8ar4aj1k6c73ere72g/my-app:latest && docker push docker.registry.render.com/prj-ct8ar4aj1k6c73ere72g/my-app:latest
