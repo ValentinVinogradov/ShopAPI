@@ -11,7 +11,8 @@ COPY . /app
 RUN chmod +x ./mvnw
 
 # Скачать зависимости и собрать JAR файл
-RUN ./mvnw clean package -DskipTests
+#RUN ./mvnw clean package -DskipTests
+RUN ./mvnw clean test -X
 
 # Копируем собранный JAR файл в образ (опционально, если нужно использовать в другом месте)
 COPY target/shop-0.0.1-SNAPSHOT.jar app.jar
