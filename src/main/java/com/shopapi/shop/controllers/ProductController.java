@@ -71,7 +71,7 @@ public class ProductController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PostMapping("/add")
     public ResponseEntity<String> addProduct(@RequestBody Product product) {
         try {
@@ -83,7 +83,7 @@ public class ProductController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PutMapping("/update")
     public ResponseEntity<String> updateProduct(@RequestBody Product product) {
         try {
@@ -95,7 +95,7 @@ public class ProductController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PatchMapping("/{productId}/change_price")
     public ResponseEntity<String> updateProductPrice(@PathVariable Long productId, @RequestBody BigDecimal newPrice) {
         try {
@@ -106,7 +106,7 @@ public class ProductController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PutMapping("/{productId}/apply_discount")
     public ResponseEntity<String> applyDiscount(@PathVariable long productId, @RequestBody int discountPercentage) {
         try {
@@ -117,7 +117,7 @@ public class ProductController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @DeleteMapping("/delete/{productId}")
     public ResponseEntity<String> deleteProductById(@PathVariable long productId) {
         try {

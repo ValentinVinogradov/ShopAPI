@@ -5,7 +5,6 @@ import com.shopapi.shop.dto.AnswerResponseDTO;
 import com.shopapi.shop.impl.AnswerServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -22,7 +21,6 @@ public class AnswerController{
     }
 
 
-    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{answerId}")
     public ResponseEntity<AnswerResponseDTO> getAnswerById(@PathVariable long answerId) {
         try {

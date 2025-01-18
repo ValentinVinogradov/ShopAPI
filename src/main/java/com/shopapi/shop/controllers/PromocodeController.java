@@ -31,7 +31,7 @@ public class PromocodeController extends GenericController<Promocode, Long>{
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PostMapping("/")
     public ResponseEntity<String> addPromocode(@RequestBody Promocode promocode) {
         try {
@@ -42,7 +42,7 @@ public class PromocodeController extends GenericController<Promocode, Long>{
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PutMapping("/")
     public ResponseEntity<String> updatePromocode(@RequestBody Promocode promocode) {
         try {
