@@ -20,8 +20,8 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<QuestionResponseDTO> getQuestionById(@PathVariable("id") long questionId) {
+    @GetMapping("/{questionId}")
+    public ResponseEntity<QuestionResponseDTO> getQuestionById(@PathVariable long questionId) {
         try {
             QuestionResponseDTO questionResponseDTO = questionService.getQuestionById(questionId);
             return ResponseEntity.status(HttpStatus.OK).body(questionResponseDTO);
@@ -56,7 +56,7 @@ public class QuestionController {
         }
     }
 
-    @PostMapping("/")
+    @PostMapping("/add")
     public ResponseEntity<String> addQuestion(@RequestBody QuestionRequestDTO questionRequestDTO) {
         try {
             questionService.addQuestion(questionRequestDTO);
@@ -66,7 +66,7 @@ public class QuestionController {
         }
     }
 
-    @PutMapping("/")
+    @PutMapping("/update")
     public ResponseEntity<String> updateQuestion(@RequestBody QuestionRequestDTO questionRequestDTO) {
         try {
             questionService.updateQuestion(questionRequestDTO);
@@ -76,7 +76,7 @@ public class QuestionController {
         }
     }
 
-    @DeleteMapping("/{questionId}")
+    @DeleteMapping("/delete/{questionId}")
     public ResponseEntity<String> deleteQuestionById(@PathVariable long questionId) {
         try {
             questionService.deleteQuestionById(questionId);

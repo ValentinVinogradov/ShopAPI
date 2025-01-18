@@ -3,6 +3,7 @@ package com.shopapi.shop.security;
 import com.shopapi.shop.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -67,10 +68,18 @@ public class SecurityConfig {
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/auth/v1/**",
-                                        "/password/v1/**",
-                                "/shop_api/v1/answers/{answerId}").permitAll()  // Регистрация и логин доступны всем
+                        .requestMatchers("/auth/v1/**",
+                                        "/password/v1/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/shop_api/v1/answers/{answerId}",
+                                "/shop_api/v1/products/{productId}",
+                                "/shop_api/v1/products/all",
+                                "/shop_api/v1/products/name/{name}",
+                                "/shop_api/v1/products/price-range",
+                                "/shop_api/v1/reviews/{reviewId}",
+                                "/shop_api/v1/reviews/product/{productId}",
+                                "/shop_api/v1/questions/{questionId}",
+                                "/shop_api/v1/questions/product/{productId}").permitAll()
                         .requestMatchers("/admin/v1/**").hasRole("ADMIN") // Доступ для админов
                         .anyRequest().authenticated()
                 )

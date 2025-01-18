@@ -5,6 +5,7 @@ import com.shopapi.shop.dto.AnswerResponseDTO;
 import com.shopapi.shop.impl.AnswerServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -21,6 +22,7 @@ public class AnswerController{
     }
 
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{answerId}")
     public ResponseEntity<AnswerResponseDTO> getAnswerById(@PathVariable long answerId) {
         try {
@@ -54,7 +56,7 @@ public class AnswerController{
 //        return ResponseEntity.ok(answers); // 200, если ответы найдены
 //    }
 
-    @PostMapping("/")
+    @PostMapping("/add")
     public ResponseEntity<String> addAnswer(@RequestBody AnswerRequestDTO answerRequestDTO) {
         try {
             answerService.addAnswer(answerRequestDTO);
@@ -66,7 +68,7 @@ public class AnswerController{
 
     }
 
-    @PutMapping("/")
+    @PutMapping("/update")
     public ResponseEntity<String> updateAnswer(@RequestBody AnswerRequestDTO answerRequestDTO) {
         try {
             answerService.updateAnswer(answerRequestDTO);
@@ -77,7 +79,7 @@ public class AnswerController{
     }
 
 
-    @DeleteMapping("/{answerId}")
+    @DeleteMapping("/delete/{answerId}")
     public ResponseEntity<String> deleteAnswerById(@PathVariable long answerId) {
         try {
             answerService.deleteAnswerById(answerId);

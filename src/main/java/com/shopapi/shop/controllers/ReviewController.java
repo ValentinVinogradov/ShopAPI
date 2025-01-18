@@ -6,7 +6,6 @@ import com.shopapi.shop.impl.ReviewServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,12 +15,10 @@ import java.util.List;
 public class ReviewController {
     private final ReviewServiceImpl reviewService;
 
-
     public ReviewController(ReviewServiceImpl reviewService) {
         this.reviewService = reviewService;
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/{reviewId}")
     public ResponseEntity<ReviewResponseDTO> getReviewById(@PathVariable long reviewId) {
         try {
@@ -38,21 +35,19 @@ public class ReviewController {
     public ResponseEntity<List<ReviewResponseDTO>> getReviewsByProductId(@PathVariable long productId) {
         try {
             List<ReviewResponseDTO> reviewResponseDTOs = reviewService.getReviewsByProductId(productId);
-            return ResponseEntity.ok(reviewResponseDTOs); // 200 если данные найдены
+            return ResponseEntity.ok(reviewResponseDTOs);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
-
-
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReviewResponseDTO>> getReviewsByUserId(@PathVariable long userId) {
         try {
             List<ReviewResponseDTO> reviewResponseDTOs = reviewService.getReviewsByUserId(userId);
-            return ResponseEntity.ok(reviewResponseDTOs); // 200 если данные найдены
+            return ResponseEntity.ok(reviewResponseDTOs);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -60,7 +55,7 @@ public class ReviewController {
         }
     }
 
-    @PostMapping("/")
+    @PostMapping("/add")
     public ResponseEntity<String> addReview(@RequestBody ReviewRequestDTO reviewRequestDTO) {
         try {
             reviewService.addReview(reviewRequestDTO);
@@ -70,7 +65,7 @@ public class ReviewController {
         }
     }
 
-    @PutMapping("/")
+    @PutMapping("/update")
     public ResponseEntity<String> updateReview(@RequestBody ReviewRequestDTO reviewRequestDTO) {
         try {
             reviewService.updateReview(reviewRequestDTO);
@@ -80,7 +75,7 @@ public class ReviewController {
         }
     }
 
-    @DeleteMapping("/{reviewId}")
+    @DeleteMapping("/delete/{reviewId}")
     public ResponseEntity<String> deleteReviewById(@PathVariable long reviewId) {
         try {
             reviewService.deleteReviewById(reviewId);

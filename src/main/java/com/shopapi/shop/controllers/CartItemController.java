@@ -29,7 +29,7 @@ public class CartItemController{
         }
     }
 
-    @PostMapping("/")
+    @PostMapping("/add")
     public ResponseEntity<String> addCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
         try {
             cartItemService.addCartItem(cartItemRequestDTO);
@@ -42,7 +42,7 @@ public class CartItemController{
         }
     }
 
-    @PutMapping("/")
+    @PutMapping("/update")
     public ResponseEntity<String> updateCartItem(@RequestBody CartItem cartItem) {
         try {
             cartItemService.updateCartItem(cartItem);
@@ -54,7 +54,7 @@ public class CartItemController{
     }
 
     //todo подумать потом над селектом
-    @DeleteMapping("/cart/{cartId}")
+    @DeleteMapping("/delete/cart/{cartId}")
     public ResponseEntity<String> deleteAllCartItemsByCartId(@PathVariable long cartId) {
         try {
             cartItemService.deleteAllItemsByCartId(cartId);
@@ -65,7 +65,7 @@ public class CartItemController{
         }
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("/delete")
     public ResponseEntity<String> deleteCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
         try {
             cartItemService.deleteCartItem(cartItemRequestDTO);

@@ -3,6 +3,7 @@ package com.shopapi.shop.controllers;
 import com.shopapi.shop.impl.UserServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -17,6 +18,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/username")
     public ResponseEntity<String> getUsername(Principal principal){
         System.out.println("зашли в контроллер для username");

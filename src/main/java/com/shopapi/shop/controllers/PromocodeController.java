@@ -6,6 +6,7 @@ import com.shopapi.shop.models.Promocode;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class PromocodeController extends GenericController<Promocode, Long>{
         this.promocodeService = promocodeService;
     }
 
+
     @GetMapping("/code/{code}")
     public ResponseEntity<Promocode> getPromocodeByCode(@PathVariable String code) {
         try {
@@ -29,6 +31,7 @@ public class PromocodeController extends GenericController<Promocode, Long>{
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PostMapping("/")
     public ResponseEntity<String> addPromocode(@RequestBody Promocode promocode) {
         try {
@@ -39,6 +42,7 @@ public class PromocodeController extends GenericController<Promocode, Long>{
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PutMapping("/")
     public ResponseEntity<String> updatePromocode(@RequestBody Promocode promocode) {
         try {

@@ -8,14 +8,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/shop_api/v1/favourites")
-@RequiredArgsConstructor
 public class FavouritesController {
 
     private final FavouriteServiceImpl favouriteService;
+
+    public FavouritesController(FavouriteServiceImpl favouriteService) {
+        this.favouriteService = favouriteService;
+    }
 
     @GetMapping("/{favouriteId}")
     public ResponseEntity<FavouriteResponseDTO> getFavouriteById(@PathVariable long favouriteId) {
@@ -31,28 +35,29 @@ public class FavouritesController {
     public ResponseEntity<List<FavouriteResponseDTO>> getFavouritesByUserId(@PathVariable long userId) {
         try {
             List<FavouriteResponseDTO> favouriteResponseDTOs = favouriteService.getFavouritesByUser(userId);
-            return ResponseEntity.status(HttpStatus.OK).body(favouriteResponseDTOs);
+            return ResponseEntity.ok(favouriteResponseDTOs);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
 
     //todo при создании записи о новом избранном надо вернуть кол-во избранных по товару
-    @PostMapping("/")
+    @PostMapping("/add")
     public ResponseEntity<String> addFavourite(@RequestBody FavouriteRequestDTO favouriteRequestDTO) {
         try {
             favouriteService.addFavourite(favouriteRequestDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Favourite added successfully!");
+            URI uri = new URI("/shop_api/v1/favourites");
+            return ResponseEntity.created(uri).body("Favourite added successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to add favourite: " + e.getMessage());
         }
     }
 
-    @DeleteMapping("/{favouriteId}")
+    @DeleteMapping("/delete/{favouriteId}")
     public ResponseEntity<String> deleteFavourite(@PathVariable long favouriteId) {
         try {
             favouriteService.deleteFavouriteById(favouriteId);
-            return ResponseEntity.status(HttpStatus.OK).body("Favourite deleted successfully!");
+            return ResponseEntity.ok("Favourite deleted successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to delete favourite: " + e.getMessage());
         }

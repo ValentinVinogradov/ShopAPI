@@ -10,6 +10,7 @@ import java.security.Principal;
 @RequestMapping("/admin/v1")
 public class AdminController {
 
+    //todo
     @GetMapping("/username")
     public String getUsername(Principal principal) {
         return principal.getName();
