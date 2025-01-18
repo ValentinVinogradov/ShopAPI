@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CartService {
     List<CartItemResponseDTO> getCartItemsByUserId(long userId);
-    void createCart(Long userId);
+    Cart createCart(Long userId);
     PromoCodeValidationStatus applyPromoCode(long cartId, String promoCode);
     void updateTotalPrice(Cart cart, BigDecimal newTotalPrice, CartTotalPriceOperation operation);  // Обновить общую стоимость корзины
 }

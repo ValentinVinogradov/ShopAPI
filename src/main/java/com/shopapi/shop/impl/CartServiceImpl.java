@@ -6,10 +6,11 @@ import com.shopapi.shop.enums.PromoCodeValidationStatus;
 import com.shopapi.shop.models.Cart;
 import com.shopapi.shop.models.Promocode;
 import com.shopapi.shop.models.User;
-import com.shopapi.shop.repository.CartRepository;
-import com.shopapi.shop.repository.UserRepository;
+import com.shopapi.shop.repositories.CartRepository;
+import com.shopapi.shop.repositories.UserRepository;
 import com.shopapi.shop.services.CartService;
 import com.shopapi.shop.utils.PriceUtils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,8 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<CartItemResponseDTO> getCartItemsByUserId(long userId) {
-        Cart cart = cartRepository.findByUser_Id(userId);
+        Cart cart = cartRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
         return cart.getCartItems().stream()
                 .map(cartItem -> new CartItemResponseDTO(cartItem.getId(),
                         cartItem.getId(),
@@ -45,20 +47,18 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public void createCart(Long userId) {
+    public Cart createCart(Long userId) {
         // Проверяем, существует ли пользователь
         User user = userRepository.findById(userId)
-                .orElse(null);
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         // Создаем новую корзину
         Cart cart = new Cart();
-        if (user != null) {
-            cart.setUser(user);
-        }
+        cart.setUser(user);
         cart.setTotalPrice(BigDecimal.ZERO);
 
-        // Сохраняем корзину в базе данных
         cartRepository.save(cart);
+        return cart;// Сохраняем корзину в базе данных
     }
 
     @Transactional
@@ -66,7 +66,7 @@ public class CartServiceImpl implements CartService {
     public PromoCodeValidationStatus applyPromoCode(long cartId, String promoCode) {
         // Проверяем, существует ли корзина
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
         System.out.println(cart);
 
 
@@ -78,7 +78,10 @@ public class CartServiceImpl implements CartService {
         }
 
         Promocode promocode = promocodeService.getPromocodeByCode(promoCode);
-        BigDecimal discountedCartTotalPrice = PriceUtils.calculateDiscountedPrice(cart.getTotalPrice(), promocode.getDiscountPercentage());
+        BigDecimal discountedCartTotalPrice = PriceUtils.calculateDiscountedPrice(
+                cart.getTotalPrice(),
+                promocode.getDiscountPercentage()
+        );
         //todo какая то логика на сохранение того что промокод был активирован
         cart.setTotalPrice(discountedCartTotalPrice);
         cartRepository.save(cart);
@@ -99,7 +102,7 @@ public class CartServiceImpl implements CartService {
     }
 
     public boolean isCartExists(long userId) {
-        return !(cartRepository.findByUser_Id(userId) == null);
+        return cartRepository.findByUser_Id(userId).isPresent();
     }
 
 }

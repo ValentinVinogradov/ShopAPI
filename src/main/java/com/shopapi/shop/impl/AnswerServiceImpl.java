@@ -6,10 +6,9 @@ import com.shopapi.shop.dto.UserResponseDTO;
 import com.shopapi.shop.models.Answer;
 import com.shopapi.shop.models.Question;
 import com.shopapi.shop.models.User;
-import com.shopapi.shop.repository.AnswerRepository;
-import com.shopapi.shop.repository.QuestionRepository;
-import com.shopapi.shop.repository.UserRepository;
-import com.shopapi.shop.services.AbstractService;
+import com.shopapi.shop.repositories.AnswerRepository;
+import com.shopapi.shop.repositories.QuestionRepository;
+import com.shopapi.shop.repositories.UserRepository;
 import com.shopapi.shop.services.AnswerService;
 import com.shopapi.shop.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,7 +33,8 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public AnswerResponseDTO getAnswerById(long answerId) {
-        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new EntityNotFoundException("Answer not found"));
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
         User user = answer.getUser();
         UserResponseDTO userResponseDTO = new UserResponseDTO(user.getId(), user.getUsername());
         return new AnswerResponseDTO(answerId,
@@ -46,16 +46,21 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public List<AnswerResponseDTO> getAnswersByUserId(long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         UserResponseDTO userResponseDTO = new UserResponseDTO(user.getId(), user.getUsername());
         List<Answer> answers = answerRepository.findAnswersByUser_Id(userId);
-        return answers.stream()
-                .map(answer -> new AnswerResponseDTO(answer.getId(),
-                        userResponseDTO,
-                        answer.getUsername(),
-                        answer.getContent(),
-                        answer.getDate()))
-                .toList();
+        if (answers != null) {
+            return answers.stream()
+                    .map(answer -> new AnswerResponseDTO(answer.getId(),
+                            userResponseDTO,
+                            answer.getUsername(),
+                            answer.getContent(),
+                            answer.getDate()))
+                    .toList();
+        } else {
+            throw new EntityNotFoundException("Answers not found");
+        }
     }
 
 //    @Override
@@ -66,8 +71,10 @@ public class AnswerServiceImpl implements AnswerService {
     @Transactional
     @Override
     public void addAnswer(AnswerRequestDTO answerRequestDTO) {
-        User user = userRepository.findById(answerRequestDTO.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
-        Question question = questionRepository.findById((answerRequestDTO.getQuestionId())).orElseThrow(() -> new EntityNotFoundException("Question not found"));
+        User user = userRepository.findById(answerRequestDTO.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        Question question = questionRepository.findById((answerRequestDTO.getQuestionId()))
+                .orElseThrow(() -> new EntityNotFoundException("Question not found"));
         Answer answer = new Answer();
         answer.setUser(user);
         answer.setQuestion(question);
@@ -82,7 +89,8 @@ public class AnswerServiceImpl implements AnswerService {
     public void updateAnswer(AnswerRequestDTO answerRequestDTO) {
         Long userId = answerRequestDTO.getUserId();
         Long questionId = answerRequestDTO.getQuestionId();
-        Answer exsistingAnswer = answerRepository.findByUserIdAndQuestionId(userId, questionId).orElseThrow(() -> new EntityNotFoundException("Answer not found"));
+        Answer exsistingAnswer = answerRepository.findAnswerByUser_IdAndQuestion_Id(userId, questionId)
+                .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
         exsistingAnswer.setContent(answerRequestDTO.getContent());
         exsistingAnswer.setDate(DateUtils.getCurrentDate());
         answerRepository.save(exsistingAnswer);

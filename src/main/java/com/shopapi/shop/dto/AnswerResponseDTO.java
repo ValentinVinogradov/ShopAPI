@@ -13,5 +13,5 @@ public class AnswerResponseDTO {
     UserResponseDTO user;
     String username;
     String content;
-    LocalDate date;
+    LocalDate createdAt;
 }

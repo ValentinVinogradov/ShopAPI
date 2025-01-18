@@ -7,7 +7,7 @@ import lombok.Value;
  */
 @Value
 public class AnswerRequestDTO {
-    Long questionId;
     Long userId;
+    Long questionId;
     String content;
 }

@@ -1,7 +1,7 @@
 package com.shopapi.shop.impl;
 
 import com.shopapi.shop.models.OrderItem;
-import com.shopapi.shop.repository.OrderItemRepository;
+import com.shopapi.shop.repositories.OrderItemRepository;
 import com.shopapi.shop.services.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;

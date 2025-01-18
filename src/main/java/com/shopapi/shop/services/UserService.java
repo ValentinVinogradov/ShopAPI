@@ -2,12 +2,13 @@ package com.shopapi.shop.services;
 
 import com.shopapi.shop.models.User;
 
-import java.util.List;
-
 public interface UserService extends GenericService<User, Long> {
-    void addUser(User user);
-    void updateUsername(Long userId, String username);
-    void updatePassword(Long userId, String password);
-    void updateEmail(Long userId, String email);
-    User authenticateUser(String email, String password); // Аутентификация пользователя по email и паролю
+    User getByUsername(String username);
+    User getByEmail(String email);
+    void updateUsername(String currentUsername, String newUsername);
+    void updatePassword(User user, String newPassword);
+//    void redirectToChangePassword();
+//    void updatePassword(String username, String newPassword) throws BadRequestException;
+
+    void updateEmail(String username, String email);
 }

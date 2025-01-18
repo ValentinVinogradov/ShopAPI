@@ -6,12 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@Entity
+@Table(name = "favourites")
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Entity
-@Table(name = "favourites")
 public class Favourite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

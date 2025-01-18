@@ -1,6 +1,5 @@
 package com.shopapi.shop.dto;
 
-import com.shopapi.shop.models.Product;
 import lombok.Value;
 
 import java.time.LocalDate;
@@ -12,12 +11,11 @@ import java.util.List;
 @Value
 public class QuestionResponseDTO {
 
-    //todo при getAll возвращать последние два ответа на вопрос
     Long id;
-//    Product product;
+    Long productId;
     UserResponseDTO user;
     String username;
     String content;
-    LocalDate date;
+    LocalDate createdAt;
     List<AnswerResponseDTO> answers;
 }

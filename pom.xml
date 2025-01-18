@@ -57,6 +57,7 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
@@ -69,6 +70,7 @@
 			<version>26.0.1</version>
 			<scope>compile</scope>
 		</dependency>
+
 
 		<!-- Безопасность -->
 		<dependency>
@@ -90,6 +92,12 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.12.5</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<version>2.5.2.RELEASE</version>
+		</dependency>
+
 
 
 		<!-- Тестирование -->
@@ -120,6 +128,7 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<version>1.18.34</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
@@ -132,6 +141,7 @@
 						<exclude>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<version>1.18.34</version>
 						</exclude>
 					</excludes>
 				</configuration>

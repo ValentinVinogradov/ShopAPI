@@ -2,14 +2,14 @@ package com.shopapi.shop.impl;
 
 import com.shopapi.shop.enums.PromoCodeValidationStatus;
 import com.shopapi.shop.models.Promocode;
-import com.shopapi.shop.repository.PromocodeRepository;
+import com.shopapi.shop.repositories.PromocodeRepository;
 import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.PromocodeService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 public class PromocodeServiceImpl extends AbstractService<Promocode, Long> implements PromocodeService {
@@ -34,19 +34,20 @@ public class PromocodeServiceImpl extends AbstractService<Promocode, Long> imple
 
     @Override
     public Promocode getPromocodeByCode(String code) {
-        return promocodeRepository.findByCode(code).orElse(null);
+        return promocodeRepository.findByCode(code)
+                .orElseThrow(() -> new EntityNotFoundException("Promocode not found"));
     }
 
     @Override
     public PromoCodeValidationStatus validatePromocode(String code) {
-        Optional<Promocode> optionalPromocode = promocodeRepository.findByCode(code);
+        Promocode promocode = promocodeRepository.findByCode(code)
+                .orElseThrow(() -> new EntityNotFoundException("Promocode not found"));
 
-        if (optionalPromocode.isEmpty()) {
+        if (promocode == null) {
             return PromoCodeValidationStatus.INVALID;
         }
 
-        Promocode promocode = optionalPromocode.get();
-
+        //todo доработать валидацию промокодов
         LocalDateTime nowTime = LocalDateTime.now();
         if (promocode.getEndDate() != null && nowTime.isAfter(promocode.getEndDate())) {
             return PromoCodeValidationStatus.EXPIRED;

@@ -1,7 +1,7 @@
 package com.shopapi.shop.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public abstract class AbstractService<T, ID> implements GenericService<T, ID> {
     }
 
     public T getById(ID id) {
-        return repository.findById(id).orElse(null);
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Entity not found"));
     }
 
     public List<T> getAll () {

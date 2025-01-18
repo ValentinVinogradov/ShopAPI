@@ -1,10 +1,11 @@
 package com.shopapi.shop.impl;
 
 import com.shopapi.shop.models.Product;
-import com.shopapi.shop.repository.ProductRepository;
+import com.shopapi.shop.repositories.ProductRepository;
 import com.shopapi.shop.services.AbstractService;
 import com.shopapi.shop.services.ProductService;
 import com.shopapi.shop.utils.PriceUtils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,13 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
     }
 
     @Override
+    public Product getProductByName(String name) {
+        return productRepository.findProductByName(name)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+    }
+
+    @Transactional
+    @Override
     public void addProduct(Product product) {
         setDate(product);
         productRepository.save(product);
@@ -41,13 +49,11 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
         product.setLastDate(DateUtils.getCurrentDate());
     }
 
-
-
     @Transactional
     @Override
     public void updateProductPrice(Long productId, BigDecimal newPrice) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
         product.setPrice(newPrice);
         setDate(product);
         productRepository.save(product);
@@ -58,7 +64,7 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
     public void applyDiscount(Long productId, int discountPercentage) {
         // Получаем продукт из базы данных
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
         // Сохраняем старую цену
         product.setOldPrice(product.getPrice());
@@ -74,11 +80,7 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
         productRepository.save(product);
     }
 
-    @Override
-    public Product getProductByName(String name) {
-        return productRepository.findByName(name);
-    }
-
+    //todo надо ли?
     @Override
     public List<Product> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
         return List.of();

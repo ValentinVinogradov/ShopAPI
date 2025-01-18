@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: default
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/shopdb}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
@@ -13,6 +15,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+app:
+  security:
+    jwt:
+      secret: my-secret-keyfjfqofkopwfkofoefjefleflwsmlmsfsfnef
+      access-token-expiration: 300000
+      refresh-token-expiration: 604800000
+    uuid:
+      token-expiration: 60000
+#      token-expiration: 3600000
 #logging:
 #  level:
 #    org:

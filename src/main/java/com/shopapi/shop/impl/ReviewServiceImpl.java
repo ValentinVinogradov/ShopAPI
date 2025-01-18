@@ -6,10 +6,9 @@ import com.shopapi.shop.dto.UserResponseDTO;
 import com.shopapi.shop.models.Product;
 import com.shopapi.shop.models.Review;
 import com.shopapi.shop.models.User;
-import com.shopapi.shop.repository.ProductRepository;
-import com.shopapi.shop.repository.ReviewRepository;
-import com.shopapi.shop.repository.UserRepository;
-import com.shopapi.shop.services.AbstractService;
+import com.shopapi.shop.repositories.ProductRepository;
+import com.shopapi.shop.repositories.ReviewRepository;
+import com.shopapi.shop.repositories.UserRepository;
 import com.shopapi.shop.services.ReviewService;
 import com.shopapi.shop.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,7 +33,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponseDTO getReviewById(long reviewId) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new EntityNotFoundException("Review not found"));
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
         User user = review.getUser();
         return new ReviewResponseDTO(review.getId(),
                 review.getProduct().getId(),
@@ -50,17 +50,21 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<ReviewResponseDTO> getReviewsByProductId(long productId) {
         List<Review> reviews = reviewRepository.findReviewsByProduct_Id(productId);
-        return reviews.stream()
-                .map(review -> new ReviewResponseDTO(review.getId(),
-                        review.getProduct().getId(),
-                        new UserResponseDTO(review.getUser().getId(), review.getUser().getUsername()),
-                        review.getUsername(),
-                        review.getRating(),
-                        review.getDignities(),
-                        review.getFlaws(),
-                        review.getContent(),
-                        review.getDate()))
-                .toList();
+        if (reviews != null) {
+            return reviews.stream()
+                    .map(review -> new ReviewResponseDTO(review.getId(),
+                            review.getProduct().getId(),
+                            new UserResponseDTO(review.getUser().getId(), review.getUser().getUsername()),
+                            review.getUsername(),
+                            review.getRating(),
+                            review.getDignities(),
+                            review.getFlaws(),
+                            review.getContent(),
+                            review.getDate()))
+                    .toList();
+        } else {
+            throw new EntityNotFoundException("Reviews not found");
+        }
     }
 
     @Override
@@ -68,23 +72,26 @@ public class ReviewServiceImpl implements ReviewService {
         List<Review> reviews = reviewRepository.findReviewsByUser_Id(userId);
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new EntityNotFoundException("User not found"));
-        return reviews.stream()
-                .map(review -> new ReviewResponseDTO(review.getId(),
-                        review.getProduct().getId(),
-                        new UserResponseDTO(user.getId(), user.getUsername()),
-                        review.getUsername(),
-                        review.getRating(),
-                        review.getDignities(),
-                        review.getFlaws(),
-                        review.getContent(),
-                        review.getDate()))
-                .toList();
+        if (reviews != null) {
+            return reviews.stream()
+                    .map(review -> new ReviewResponseDTO(review.getId(),
+                            review.getProduct().getId(),
+                            new UserResponseDTO(user.getId(), user.getUsername()),
+                            review.getUsername(),
+                            review.getRating(),
+                            review.getDignities(),
+                            review.getFlaws(),
+                            review.getContent(),
+                            review.getDate()))
+                    .toList();
+        } else {
+            throw new EntityNotFoundException("Reviews not found");
+        }
     }
 
     @Transactional
     @Override
     public void addReview(ReviewRequestDTO reviewRequestDTO) {
-        //todo обработка исключений
         User user = userRepository.findById(reviewRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Product product = productRepository.findById(reviewRequestDTO.getProductId())
@@ -99,7 +106,6 @@ public class ReviewServiceImpl implements ReviewService {
         review.setFlaws(reviewRequestDTO.getFlaws());
         review.setDate(DateUtils.getCurrentDate());
 
-        System.out.println(review);
         // Сохраняем в базу
         reviewRepository.save(review);
     }
@@ -109,13 +115,14 @@ public class ReviewServiceImpl implements ReviewService {
     public void updateReview(ReviewRequestDTO reviewRequestDTO) {
         Long userId = reviewRequestDTO.getUserId();
         Long productId = reviewRequestDTO.getProductId();
-        Review exsistingReview = reviewRepository.findByUserIdAndProductId(userId, productId).orElseThrow(() -> new RuntimeException("Review not found"));
-        exsistingReview.setContent(reviewRequestDTO.getContent());
-        exsistingReview.setRating(reviewRequestDTO.getRating());
-        exsistingReview.setDignities(reviewRequestDTO.getDignities());
-        exsistingReview.setFlaws(reviewRequestDTO.getFlaws());
-        exsistingReview.setDate(DateUtils.getCurrentDate());
-        reviewRepository.save(exsistingReview);
+        Review review = reviewRepository.findReviewByUser_IdAndProduct_Id(userId, productId)
+                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+        review.setContent(reviewRequestDTO.getContent());
+        review.setRating(reviewRequestDTO.getRating());
+        review.setDignities(reviewRequestDTO.getDignities());
+        review.setFlaws(reviewRequestDTO.getFlaws());
+        review.setDate(DateUtils.getCurrentDate());
+        reviewRepository.save(review);
     }
 
     @Override

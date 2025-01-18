@@ -5,45 +5,56 @@ import com.shopapi.shop.models.Favourite;
 import com.shopapi.shop.dto.FavouriteResponseDTO;
 import com.shopapi.shop.models.Product;
 import com.shopapi.shop.models.User;
-import com.shopapi.shop.repository.FavouriteRepository;
+import com.shopapi.shop.repositories.FavouriteRepository;
+import com.shopapi.shop.repositories.UserRepository;
 import com.shopapi.shop.services.FavouriteService;
 import com.shopapi.shop.services.ProductService;
-import com.shopapi.shop.services.UserService;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class FavouriteServiceImpl implements FavouriteService {
 
     private final FavouriteRepository favouriteRepository;
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     private final ProductService productService;
+
+    public FavouriteServiceImpl(FavouriteRepository favouriteRepository, UserRepository userRepository, ProductService productService) {
+        this.favouriteRepository = favouriteRepository;
+        this.userRepository = userRepository;
+        this.productService = productService;
+    }
+
 
     @Override
     public List<FavouriteResponseDTO> getFavouritesByUser(long userId) {
         List<Favourite> favourites = favouriteRepository.findAllByUser_Id(userId);
-        return favourites.stream()
-                .map(favourite -> new FavouriteResponseDTO(userId,
-                        favourite.getProduct().getId(),
-                        favourite.getId()))
-                .toList();
+        if (favourites != null) {
+            return favourites.stream()
+                    .map(favourite -> new FavouriteResponseDTO(userId,
+                            favourite.getProduct().getId(),
+                            favourite.getId()))
+                    .toList();
+        } else {
+            throw new EntityNotFoundException("Favourites not found");
+        }
     }
 
     @Override
     public FavouriteResponseDTO getFavouriteById(long id) {
-        Favourite favourite = favouriteRepository.findById(id).orElse(null);
-        //todo проверки
+        Favourite favourite = favouriteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Favourite not found"));
         return new FavouriteResponseDTO(id, favourite.getUser().getId(), favourite.getProduct().getId());
     }
 
     @Override
     public void addFavourite(FavouriteRequestDTO favouriteRequestDTO) {
-        User user = userService.getById(favouriteRequestDTO.getUserId());
+        User user = userRepository.findById(favouriteRequestDTO.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Product product = productService.getById(favouriteRequestDTO.getProductId());
         Favourite favourite = new Favourite();
         favourite.setUser(user);

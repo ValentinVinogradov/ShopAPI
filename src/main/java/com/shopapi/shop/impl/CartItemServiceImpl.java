@@ -6,9 +6,9 @@ import com.shopapi.shop.enums.CartTotalPriceOperation;
 import com.shopapi.shop.models.Cart;
 import com.shopapi.shop.models.CartItem;
 import com.shopapi.shop.models.Product;
-import com.shopapi.shop.repository.CartItemRepository;
-import com.shopapi.shop.repository.CartRepository;
-import com.shopapi.shop.repository.ProductRepository;
+import com.shopapi.shop.repositories.CartItemRepository;
+import com.shopapi.shop.repositories.CartRepository;
+import com.shopapi.shop.repositories.ProductRepository;
 import com.shopapi.shop.services.CartItemService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -41,7 +41,8 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItemResponseDTO getCartItemById(long cartItemId) {
-        CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart item not found"));
         return new CartItemResponseDTO(cartItem.getId(),
                 cartItem.getCart().getId(),
                 cartItem.getProduct().getId(),
@@ -65,15 +66,12 @@ public class CartItemServiceImpl implements CartItemService {
             cart = cartRepository.findById(cartId).orElse(null);
         } else {
 //          Если cartId не передан, ищем корзину по userId
-            cart = cartRepository.findByUser_Id(userId);
+            cart = cartRepository.findByUser_Id(userId).orElse(null);
         }
 
         if (cart == null) {
-            cartService.createCart(userId);
-            cart = cartRepository.findByUser_Id(userId);
-
+            cart = cartService.createCart(userId);
         }
-
         return cart;
     }
 
@@ -89,7 +87,7 @@ public class CartItemServiceImpl implements CartItemService {
 
         // Проверяем, существует ли уже товар в корзине
         Product product = productRepository.findById(productId)
-                        .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                        .orElseThrow(() -> new EntityNotFoundException("Product not found"));
         BigDecimal productPrice = product.getPrice();
 
 //        CartItem existingCartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
