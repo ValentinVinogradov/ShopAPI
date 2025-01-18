@@ -18,6 +18,8 @@ RUN chmod +x ./mvnw
 # Собираем проект
 RUN ./mvnw clean package -DskipTests
 
+RUN ls -l target/
+
 # Копируем собранный JAR файл
 COPY target/shop-0.0.1-SNAPSHOT.jar app.jar
 
