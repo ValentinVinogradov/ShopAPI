@@ -22,7 +22,7 @@ public class FavouritesController {
     }
 
     @GetMapping("/{favouriteId}")
-    public ResponseEntity<FavouriteResponseDTO> getFavouriteById(@PathVariable long favouriteId) {
+    public ResponseEntity<FavouriteResponseDTO> getFavourite(@PathVariable long favouriteId) {
         try {
             FavouriteResponseDTO favouriteResponseDTO = favouriteService.getFavouriteById(favouriteId);
             return ResponseEntity.ok(favouriteResponseDTO);
@@ -32,10 +32,20 @@ public class FavouritesController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<FavouriteResponseDTO>> getFavouritesByUserId(@PathVariable long userId) {
+    public ResponseEntity<List<FavouriteResponseDTO>> getFavouritesByUser(@PathVariable long userId) {
         try {
-            List<FavouriteResponseDTO> favouriteResponseDTOs = favouriteService.getFavouritesByUser(userId);
+            List<FavouriteResponseDTO> favouriteResponseDTOs = favouriteService.getFavouritesByUserId(userId);
             return ResponseEntity.ok(favouriteResponseDTOs);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<Integer> getAllFavouritesByProduct(@PathVariable long productId) {
+        try {
+            Integer countOfFavourites = favouriteService.getAllFavouritesByProductId(productId);
+            return ResponseEntity.ok(countOfFavourites);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }

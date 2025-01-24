@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/shop_api/v1/cart_items")
@@ -53,9 +54,19 @@ public class CartItemController{
         }
     }
 
-    //todo подумать потом над селектом
-    @DeleteMapping("/delete/cart/{cartId}")
-    public ResponseEntity<String> deleteAllCartItemsByCartId(@PathVariable long cartId) {
+    @DeleteMapping("/delete/cart/{cartId}/selected-items")
+    public ResponseEntity<String> deleteSelectedItems(@RequestBody List<Long> cartItemIds) {
+        try {
+            cartItemService.deleteSelectedCartItems(cartItemIds);
+            return ResponseEntity.ok("Selected items successfully deleted!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to delete selected items");
+        }
+    }
+
+    //todo подумать потом над селектом (реализовал удаление)
+    @DeleteMapping("/delete/cart/{cartId}/all")
+    public ResponseEntity<String> deleteAllCartItems(@PathVariable long cartId) {
         try {
             cartItemService.deleteAllItemsByCartId(cartId);
             return ResponseEntity.ok("All items from cart deleted successfully!"); // 200 OK

@@ -19,7 +19,7 @@ public class PromocodeController extends GenericController<Promocode, Long>{
         this.promocodeService = promocodeService;
     }
 
-
+    //todo
     @GetMapping("/code/{code}")
     public ResponseEntity<Promocode> getPromocodeByCode(@PathVariable String code) {
         try {

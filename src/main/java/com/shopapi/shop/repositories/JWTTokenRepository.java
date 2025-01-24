@@ -18,7 +18,6 @@ public interface JWTTokenRepository extends JpaRepository<JWTToken, Long> {
 //    @Query("select t from JWTToken t inner join t.user u where u.id = :userId and t.isLoggedOut =
     List<JWTToken> findAllByUser_Id(long userId);
 
-    //todo дописать см. сервис
     @Transactional
     @Modifying
 //    @Query("DELETE FROM JWTToken t WHERE t.user.id = :userId AND t.isLoggedOut = false")

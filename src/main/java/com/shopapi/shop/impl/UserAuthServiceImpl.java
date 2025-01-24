@@ -5,6 +5,7 @@ import com.shopapi.shop.dto.UserSignInRequestDTO;
 import com.shopapi.shop.dto.UserSignUpRequestDTO;
 import com.shopapi.shop.models.JWTToken;
 import com.shopapi.shop.models.Role;
+import com.shopapi.shop.models.UUIDToken;
 import com.shopapi.shop.models.User;
 import com.shopapi.shop.repositories.JWTTokenRepository;
 import com.shopapi.shop.repositories.RoleRepository;
@@ -33,20 +34,24 @@ public class UserAuthServiceImpl implements UserAuthService {
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
+
     private final JWTServiceImpl jwtService;
+    private final UUIDTokenServiceImpl tokenService;
 
     public UserAuthServiceImpl(UserRepository userRepository,
                                RoleRepository roleRepository,
                                JWTTokenRepository tokenRepository,
                                PasswordEncoder passwordEncoder,
                                AuthenticationManager authenticationManager,
-                               JWTServiceImpl jwtService) {
+                               JWTServiceImpl jwtService,
+                               UUIDTokenServiceImpl tokenService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.tokenService = tokenService;
     }
 
     public JWTResponseDTO signUp(UserSignUpRequestDTO userSignUpRequestDTO) {
@@ -65,7 +70,10 @@ public class UserAuthServiceImpl implements UserAuthService {
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        //todo подумать над разделением сеансов либо удалять вообще токены
+        //todo добавить сюда добавление потом его в дто скорее всего
+        String uuidToken = tokenService.generateToken(user).getToken();
+
+        //todo подумать над разделением сеансов
 
         revokeAllUserAccessTokens(user);
 

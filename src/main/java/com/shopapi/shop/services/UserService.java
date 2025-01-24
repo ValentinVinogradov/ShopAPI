@@ -10,5 +10,5 @@ public interface UserService extends GenericService<User, Long> {
 //    void redirectToChangePassword();
 //    void updatePassword(String username, String newPassword) throws BadRequestException;
 
-    void updateEmail(String username, String email);
+//    void updateEmail(String username, String email);
 }

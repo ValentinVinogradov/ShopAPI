@@ -80,7 +80,7 @@ public class ProductServiceImpl extends AbstractService<Product, Long> implement
         productRepository.save(product);
     }
 
-    //todo надо ли?
+    //todo надо ли? (наверное нет)
     @Override
     public List<Product> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
         return List.of();

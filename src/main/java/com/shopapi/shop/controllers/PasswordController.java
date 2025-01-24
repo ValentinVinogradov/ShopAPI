@@ -1,7 +1,8 @@
 package com.shopapi.shop.controllers;
 
-import com.shopapi.shop.dto.ResetPasswordRequestDTO;
+import com.shopapi.shop.dto.UserFieldsRequestDTO;
 import com.shopapi.shop.impl.PasswordServiceImpl;
+import com.shopapi.shop.impl.UserServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,29 +14,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/password/v1")
 public class PasswordController {
     private final PasswordServiceImpl passwordService;
+    private final UserServiceImpl userService;
 
-    public PasswordController(PasswordServiceImpl passwordService) {
+    public PasswordController(PasswordServiceImpl passwordService,
+                              UserServiceImpl userService) {
         this.passwordService = passwordService;
+        this.userService = userService;
     }
 
 
-    //todo подумать над добавлением сюда простой смены пароля и надо ли вообще простую
-    //todo подумать про то как передавать параметры в виде DTO или по отдельности
+    //todo подумать над добавлением сюда простой смены пароля и надо ли вообще простую (наверное не надо)
+    //todo подумать про то как передавать параметры в виде DTO или по отдельности (лучше с DTO)
 
 
-    @PostMapping("/generate-token")
-    public ResponseEntity<String> generateToken(@RequestBody ResetPasswordRequestDTO resetDTO)  {
+    @PostMapping("/generate-password-token")
+    public ResponseEntity<String> generatePasswordToken(@RequestBody UserFieldsRequestDTO resetDTO)  {
         try {
             return ResponseEntity.ok(passwordService.generateToken(resetDTO.getEmail()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Email doesn't exists");
+            return ResponseEntity.badRequest().body("Failed to generate password token");
         }
     }
 
+    //todo добавить валидацию для совпадения что токен конкретно какого то пользователя
     @PostMapping("/check-token")
-    public ResponseEntity<String> checkToken(@RequestBody ResetPasswordRequestDTO resetDTO) {
+    public ResponseEntity<String> checkPasswordToken(@RequestBody UserFieldsRequestDTO resetDTO) {
         try {
-            return ResponseEntity.ok(passwordService.checkToken(resetDTO.getToken()));
+            return ResponseEntity.ok(passwordService.checkPasswordToken(resetDTO.getToken()));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -44,7 +49,7 @@ public class PasswordController {
     }
 
     @PostMapping("/new-password")
-    public ResponseEntity<String> saveNewPassword(@RequestBody ResetPasswordRequestDTO resetDTO) {
+    public ResponseEntity<String> saveNewPassword(@RequestBody UserFieldsRequestDTO resetDTO) {
         try {
             passwordService.saveNewPassword(resetDTO.getEmail(), resetDTO.getNewPassword());
             return ResponseEntity.ok().body("Password changed successfully!");

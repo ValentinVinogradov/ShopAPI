@@ -86,7 +86,7 @@ public class QuestionController {
         }
     }
 
-//todo понять что с этой хуйней делать
+//todo понять что с этой хуйней делать (вроде как ничего т.к. дто уже содержит ответы)
 
 //    @GetMapping("/answers/{questionId}")
 //    public ResponseEntity<List<Answer>> getAnswersByQuestionId(@PathVariable long questionId) {

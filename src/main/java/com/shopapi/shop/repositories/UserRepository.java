@@ -11,11 +11,8 @@ import java.util.Optional;
 
 //todo тут необходимые методы дописать для запросов в бд
 public interface UserRepository extends JpaRepository<User, Long> {
-//    @Query("select (count(u) > 0) from User u")
-
     Optional<User> findUserByUsername(String username);
 
-//    @Query("SELECT u FROM User u WHERE u.email = ?1")
     Optional<User> findUserByEmail(String email);
 
     @Modifying
@@ -23,9 +20,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.username = :username WHERE u.id = :id")
     void updateUsername(@Param("id") Long userId, @Param("username") String username);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE User u SET u.password = :password WHERE u.id = :id")
-    void updatePassword(@Param("id") Long userId, @Param("password") String password);
+//    @Modifying
+//    @Transactional
+//    @Query("UPDATE User u SET u.password = :password WHERE u.id = :id")
+//    void updatePassword(@Param("id") Long userId, @Param("password") String password);
 }
 

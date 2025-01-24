@@ -24,8 +24,6 @@ public class UUIDTokenServiceImpl implements UUIDTokenService {
     }
 
 
-    //todo дату выдачи и окончания
-    //todo подумать где лучше юзать репозиторий для токенов
     @Override
     public UUIDToken generateToken(User user) {
         UUIDToken token = new UUIDToken();
@@ -45,8 +43,12 @@ public class UUIDTokenServiceImpl implements UUIDTokenService {
                 .orElseThrow(() -> new EntityNotFoundException("UUID token not found"));
     }
 
-    public void deleteUUIDTokenByUserId(long userId) {
-        tokenRepository.deleteUUIDTokenByUser_Id(userId);
+    public void deleteEmailTypeTokenByUserId(long userId) {
+        tokenRepository.deleteEmailTypeTokenByUserId(userId);
+    }
+
+    public void deletePasswordTypeTokenByUserId(long userId) {
+        tokenRepository.deletePasswordTypeTokenByUserId(userId);
     }
 
     public boolean existsTokenByUserId(long userId) {

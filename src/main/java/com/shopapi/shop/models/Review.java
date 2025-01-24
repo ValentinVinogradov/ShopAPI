@@ -45,7 +45,6 @@ public class Review {
     @Column(name = "date")
     private LocalDate date;
 
-    //todo статус по желанию
 
     @Override
     public final boolean equals(Object o) {

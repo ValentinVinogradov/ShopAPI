@@ -16,6 +16,9 @@ import java.util.Set;
 @ToString
 @RequiredArgsConstructor
 public class User {
+
+    //todo добавить столбец isEmailConfirmed
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

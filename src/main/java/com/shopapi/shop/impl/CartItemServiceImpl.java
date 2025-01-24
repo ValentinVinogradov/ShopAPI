@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class CartItemServiceImpl implements CartItemService {
@@ -110,15 +111,10 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Transactional
     @Override
+    //todo убрал поиск по товару
     public void deleteCartItem(@NotNull CartItemRequestDTO cartItemRequestDTO) {
-//        Long cartId = cartItemRequestDTO.getCartId();
-//        Long productId = cartItemRequestDTO.getProductId();
-//        Product product = productRepository.findById(cartItemRequestDTO.getProductId()).
-//                orElseThrow(() -> new EntityNotFoundException("Product not found"));
-//        BigDecimal productPrice = product.getPrice();
         CartItem existingCartItem = cartItemRepository.findById(cartItemRequestDTO.getId()).
                 orElseThrow(() -> new EntityNotFoundException("Cart Item not found"));
-//        CartItem existingCartItem = cartItemRepository.findByCartIdAndProductId(cartId, productId);
         if (existingCartItem != null) {
             if (existingCartItem.getQuantity() > 1) {
                 updateQuantity(existingCartItem, -1);
@@ -126,12 +122,9 @@ public class CartItemServiceImpl implements CartItemService {
             } else {
                 cartItemRepository.deleteById(existingCartItem.getId());
             }
-
-            Cart cart = cartRepository.findById(cartItemRequestDTO.getCartId()).orElse(null);
-            if (cart != null) {
-                cartService.updateTotalPrice(cart, existingCartItem.getProduct().getPrice(), subtract);
-                cartRepository.save(cart);
-            }
+            Cart cart = existingCartItem.getCart();
+            cartService.updateTotalPrice(cart, existingCartItem.getProduct().getPrice(), subtract);
+            cartRepository.save(cart);
         }
     }
 
@@ -141,11 +134,13 @@ public class CartItemServiceImpl implements CartItemService {
         cartItem.setQuantity(currentQuantity + quantityChange);
     }
 
-    //todo
     @Transactional
     public void updateCartItem(CartItem cartItem) {
         cartItemRepository.save(cartItem);
     }
 
 
+    public void deleteSelectedCartItems(List<Long> cartItemIds) {
+        cartItemRepository.deleteAllById(cartItemIds);
+    }
 }

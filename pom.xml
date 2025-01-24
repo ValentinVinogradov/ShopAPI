@@ -12,7 +12,7 @@
 	<artifactId>shop</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>shop</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Shop Backend made on Spring Boot 3.3.5</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -119,6 +119,7 @@
     </dependencies>
 
 	<build>
+		<finalName>shop-api</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

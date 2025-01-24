@@ -1,5 +1,6 @@
 package com.shopapi.shop.models;
 
+import com.shopapi.shop.enums.UUIDTokenType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,9 @@ public class UUIDToken {
 
     @Column(name = "token")
     private String token;
+
+    @Column(name = "type")
+    private UUIDTokenType tokenType;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

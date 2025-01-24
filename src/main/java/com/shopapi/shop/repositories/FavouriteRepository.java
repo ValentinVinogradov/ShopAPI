@@ -11,7 +11,8 @@ import java.util.List;
 
 @Repository
 public interface FavouriteRepository extends JpaRepository<Favourite, Long> {
-    List<Favourite> findAllByUser_Id(Long id);
+    List<Favourite> findAllByUser_Id(Long userId);
+    int findAllByProduct_Id(long productId);
 
     @Transactional
     @Modifying

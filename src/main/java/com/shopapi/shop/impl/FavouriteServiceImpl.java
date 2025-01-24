@@ -29,9 +29,15 @@ public class FavouriteServiceImpl implements FavouriteService {
         this.productService = productService;
     }
 
+    @Override
+    public FavouriteResponseDTO getFavouriteById(long id) {
+        Favourite favourite = favouriteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Favourite not found"));
+        return new FavouriteResponseDTO(id, favourite.getUser().getId(), favourite.getProduct().getId());
+    }
 
     @Override
-    public List<FavouriteResponseDTO> getFavouritesByUser(long userId) {
+    public List<FavouriteResponseDTO> getFavouritesByUserId(long userId) {
         List<Favourite> favourites = favouriteRepository.findAllByUser_Id(userId);
         if (favourites != null) {
             return favourites.stream()
@@ -44,11 +50,8 @@ public class FavouriteServiceImpl implements FavouriteService {
         }
     }
 
-    @Override
-    public FavouriteResponseDTO getFavouriteById(long id) {
-        Favourite favourite = favouriteRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Favourite not found"));
-        return new FavouriteResponseDTO(id, favourite.getUser().getId(), favourite.getProduct().getId());
+    public int getAllFavouritesByProductId(long productId) {
+        return favouriteRepository.findAllByProduct_Id(productId);
     }
 
     @Override
@@ -67,4 +70,6 @@ public class FavouriteServiceImpl implements FavouriteService {
         favouriteRepository.deleteById(favouriteId);
 //        favouriteRepository.deleteByUserAndProduct(favouriteRequestDTO.getUserId(), favouriteRequestDTO.getProductId());
     }
+
+
 }

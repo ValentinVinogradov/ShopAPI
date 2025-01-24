@@ -13,7 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 
-//todo подумать над реализацией гет и пост запросов через дто как то
+//todo подумать над реализацией гет и пост запросов через дто как то (ниче страшного как выяснилось)
 @RestController
 @RequestMapping("/shop_api/v1/products")
 public class ProductController {

@@ -1,9 +1,11 @@
 package com.shopapi.shop.impl;
 
+import com.shopapi.shop.enums.UUIDTokenType;
 import com.shopapi.shop.models.UUIDToken;
 import com.shopapi.shop.models.User;
 import com.shopapi.shop.services.PasswordService;
 import jakarta.persistence.EntityNotFoundException;
+import org.antlr.v4.runtime.tree.pattern.TokenTagToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,6 @@ import org.springframework.stereotype.Service;
 public class PasswordServiceImpl implements PasswordService {
     private final UUIDTokenServiceImpl tokenService;
     private final UserServiceImpl userService;
-//    private final UUIDTokenRepository tokenRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -30,46 +31,26 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     @Override
-    public String generateToken(String email) throws BadCredentialsException {
+    public String generateToken(String email) {
         if (isExistsUserEmail(email)) {
-            User user = userService.getByEmail(email);
-            revokeUserUUIDToken(user.getId());
-            UUIDToken token = tokenService.generateToken(user);
-            return token.getToken();
+            return userService.generatePasswordToken(email);
         } else {
             throw new BadCredentialsException("Email doesn't exists");
         }
     }
 
-    private void revokeUserUUIDToken(long userId) {
-        if (tokenService.existsTokenByUserId(userId)) {
-            tokenService.deleteUUIDTokenByUserId(userId);
-        }
+    public String checkPasswordToken(String token) {
+        return userService.checkToken(token, UUIDTokenType.PASSWORD);
     }
 
     //todo сделать метод удаления старых ненужных токенов
 
-    public String checkToken(String token) {
-        try {
-            UUIDToken storedToken = tokenService.getToken(token);
-            if (tokenService.isValidUUIDToken(storedToken)) {
-                return "Success!";
-            } else {
-                //todo удаление по токену
-                //todo надо ли удалять токен после неудачной проверки?
-//                revokeUserUUIDToken();
-                throw new BadCredentialsException("Token was expired");
-            }
-        } catch (EntityNotFoundException e) {
-            throw new EntityNotFoundException("Token not found");
-        }
-    }
 
-    //todo понять надо ли валидировать второй раз токен ?
+    //todo понять надо ли валидировать второй раз токен ? (наверное там как то через сессию)
     @Override
     public void saveNewPassword(String email, String newPassword) {
         User user = userService.getByEmail(email);
         userService.updatePassword(user, passwordEncoder.encode(newPassword));
-        tokenService.deleteUUIDTokenByUserId(user.getId());
+        tokenService.deletePasswordTypeTokenByUserId(user.getId());
     }
 }

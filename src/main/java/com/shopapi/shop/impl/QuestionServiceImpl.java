@@ -140,13 +140,9 @@ public class QuestionServiceImpl implements QuestionService {
         questionRepository.save(exsistingQuestion);
     }
 
-    //todo разобраться с этими комментами и везде так же проверить на закомменченный код кроме токенов
     @Transactional
     @Override
     public void deleteQuestionById(long questionId) {
-//        Long userId = questionResponseDTO.getUser().getId();
-//        Long questionId = questionResponseDTO.getId();
-//        questionRepository.deleteQuestionByIdAndUserId(questionId, userId);
         questionRepository.deleteById(questionId);
     }
 

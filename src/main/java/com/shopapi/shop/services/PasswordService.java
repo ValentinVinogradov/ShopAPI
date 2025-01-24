@@ -7,7 +7,7 @@ public interface PasswordService {
 
     String generateToken(String email) throws BadCredentialsException;
 
-    String checkToken(String token) throws BadCredentialsException;
+    String checkPasswordToken(String token) throws BadCredentialsException;
 
     void saveNewPassword(String email, String newPassword);
 }

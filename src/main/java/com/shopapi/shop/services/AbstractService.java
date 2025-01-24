@@ -19,7 +19,6 @@ public abstract class AbstractService<T, ID> implements GenericService<T, ID> {
 
     public List<T> getAll () {
         return repository.findAll();
-        //todo условие на null
     }
 
     @Transactional
