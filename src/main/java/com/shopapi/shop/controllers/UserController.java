@@ -3,8 +3,8 @@ package com.shopapi.shop.controllers;
 import com.shopapi.shop.dto.UserFieldsRequestDTO;
 import com.shopapi.shop.enums.UUIDTokenType;
 import com.shopapi.shop.impl.UserServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -19,37 +19,32 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/username")
     public ResponseEntity<String> getUsername(Principal principal){
         System.out.println("зашли в контроллер для username");
         return ResponseEntity.ok(principal.getName());
     }
 
+    //todo подумать над тем чтобы хранилось UUID пользователя вместо имени в токене
+
     @PostMapping("/change-username")
-    public ResponseEntity<String> changeUsername(@RequestBody String newUsername, Principal principal) {
+    public ResponseEntity<String> changeUsername(@RequestBody UserFieldsRequestDTO usernameDTO, Principal principal) {
         try {
-            userService.updateUsername(principal.getName(), newUsername);
-            return ResponseEntity.ok("Username changed for user with name" + principal.getName());
+            userService.changeUsername(principal.getName(), usernameDTO.getNewUsername());
+            return ResponseEntity.ok("Username changed for user with name " + principal.getName());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("User with this username already exists");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to change username");
         }
     }
 
     //todo подумать над тем надо ли будет разлогинить пользователя после смены пароля (да если несколько сеансов)
 
-    //todo организовать подтверждение почты создание её но не подтверждение типо
-    // добавить в бд её но подтвердить он должен сам тип ему будет даваться токен
-    // при регистрации и в профиле будет висеть кнопка подтверждения и будет генерироваться токен заново
-    // так же и со сменой
-
-    //todo подумать надо ли создавать отдельную сущность почты просто надо проверять подтверждена она или нет
-    // можно в сущности пользователя столбец добавить emailConfirmed
-
     @PostMapping("/generate-verify-token")
     public ResponseEntity<String> generateVerifyToken(@RequestBody UserFieldsRequestDTO verifyDTO) {
         try {
-             return ResponseEntity.ok(userService.generateEmailToken(verifyDTO.getEmail()));
+             return ResponseEntity.ok(userService.generateToken(verifyDTO.getEmail(), UUIDTokenType.EMAIL));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to generate verify token");
         }
@@ -59,8 +54,20 @@ public class UserController {
     public ResponseEntity<String> checkEmailToken(@RequestBody UserFieldsRequestDTO verifyDTO) {
         try {
             return ResponseEntity.ok(userService.checkToken(verifyDTO.getToken(), UUIDTokenType.EMAIL));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid token");
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/change-email")
+    public ResponseEntity<String> changeEmail(@RequestBody UserFieldsRequestDTO emailDTO, Principal principal) {
+        try {
+            userService.changeEmail(principal.getName(), emailDTO.getNewEmail());
+            return ResponseEntity.ok(userService.generateToken(emailDTO.getNewEmail(), UUIDTokenType.EMAIL));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to change email");
         }
     }
 
@@ -68,5 +75,4 @@ public class UserController {
     public ResponseEntity<String> addPhoneNumber() {
         return null;
     }
-
 }

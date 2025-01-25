@@ -19,13 +19,20 @@ public interface UUIDTokenRepository extends JpaRepository<UUIDToken, Long> {
 //    @Query("DELETE FROM UUIDToken t WHERE t.user.id = :userId")
 //    void deleteUUIDTokenByUser_Id(long userId);
 
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM UUIDToken t WHERE t.user.id = :userId AND t.tokenType = 'EMAIL'")
-    void deleteEmailTypeTokenByUserId(long userId);
+
+    //todo переделать запросы
+//    @Modifying
+//    @Transactional
+//    @Query("DELETE FROM UUIDToken t WHERE t.user.id = :userId AND t.tokenType = 'EMAIL'")
+//    void deleteEmailTypeTokenByUserId(long userId);
+//
+//    @Modifying
+//    @Transactional
+//    @Query("DELETE FROM UUIDToken t WHERE t.user.id = :userId AND t.tokenType = 'PASSWORD'")
+//    void deletePasswordTypeTokenByUserId(long userId);
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM UUIDToken t WHERE t.user.id = :userId AND t.tokenType = 'PASSWORD'")
-    void deletePasswordTypeTokenByUserId(long userId);
+    @Query("DELETE FROM UUIDToken t WHERE t.user.id = :userId AND t.tokenType = :tokenType")
+    void deleteAllTokensWithTypeByUserId(long userId, UUIDTokenType tokenType);
 }

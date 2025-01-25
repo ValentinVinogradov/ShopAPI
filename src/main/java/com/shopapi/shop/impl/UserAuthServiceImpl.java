@@ -1,13 +1,11 @@
 package com.shopapi.shop.impl;
 
-import com.shopapi.shop.dto.JWTResponseDTO;
+import com.shopapi.shop.dto.TokenResponseDTO;
 import com.shopapi.shop.dto.UserSignInRequestDTO;
 import com.shopapi.shop.dto.UserSignUpRequestDTO;
-import com.shopapi.shop.models.JWTToken;
+import com.shopapi.shop.enums.UUIDTokenType;
 import com.shopapi.shop.models.Role;
-import com.shopapi.shop.models.UUIDToken;
 import com.shopapi.shop.models.User;
-import com.shopapi.shop.repositories.JWTTokenRepository;
 import com.shopapi.shop.repositories.RoleRepository;
 import com.shopapi.shop.repositories.UserRepository;
 import com.shopapi.shop.services.UserAuthService;
@@ -23,38 +21,35 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class UserAuthServiceImpl implements UserAuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final JWTTokenRepository tokenRepository;
-
+    private final UserServiceImpl userService;
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
 
     private final JWTServiceImpl jwtService;
-    private final UUIDTokenServiceImpl tokenService;
+    private final UUIDTokenServiceImpl UUIDTokenService;
 
     public UserAuthServiceImpl(UserRepository userRepository,
                                RoleRepository roleRepository,
-                               JWTTokenRepository tokenRepository,
+                               UserServiceImpl userService,
                                PasswordEncoder passwordEncoder,
                                AuthenticationManager authenticationManager,
                                JWTServiceImpl jwtService,
-                               UUIDTokenServiceImpl tokenService) {
+                               UUIDTokenServiceImpl UUIDTokenService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.tokenRepository = tokenRepository;
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
-        this.tokenService = tokenService;
+        this.UUIDTokenService = UUIDTokenService;
     }
 
-    public JWTResponseDTO signUp(UserSignUpRequestDTO userSignUpRequestDTO) {
+    public TokenResponseDTO signUp(UserSignUpRequestDTO userSignUpRequestDTO) {
         User user = new User();
         Role userRole = roleRepository.findRoleByName("ROLE_USER")
                 .orElseThrow(() -> new EntityNotFoundException("Роль 'ROLE_USER' не найдена"));
@@ -69,21 +64,18 @@ public class UserAuthServiceImpl implements UserAuthService {
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+        String UUIDToken = UUIDTokenService.generateToken(user, UUIDTokenType.EMAIL).getToken();
 
-        //todo добавить сюда добавление потом его в дто скорее всего
-        String uuidToken = tokenService.generateToken(user).getToken();
+        //todo надо ли при регистрации что то удалять?
+//        userService.revokeAllUserAccessTokens(user);
 
-        //todo подумать над разделением сеансов
+        jwtService.saveUserTokens(user, accessToken, refreshToken);
 
-        revokeAllUserAccessTokens(user);
-
-        saveUserTokens(user, accessToken, refreshToken);
-
-        return new JWTResponseDTO(accessToken, refreshToken);
+        return new TokenResponseDTO(accessToken, refreshToken, UUIDToken);
     }
 
     @Override
-    public JWTResponseDTO signIn(UserSignInRequestDTO userSignInRequestDTO) {
+    public TokenResponseDTO signIn(UserSignInRequestDTO userSignInRequestDTO) {
         String login = userSignInRequestDTO.getLogin();
         String password = userSignInRequestDTO.getPassword();
         Authentication authentication = authenticationManager.
@@ -95,9 +87,11 @@ public class UserAuthServiceImpl implements UserAuthService {
             } else {
                 String accessToken = jwtService.generateAccessToken(user);
                 String refreshToken = jwtService.generateRefreshToken(user);
-                revokeAllUserAccessTokens(user);
-                saveUserTokens(user, accessToken, refreshToken);
-                return new JWTResponseDTO(accessToken, refreshToken); //username or else???
+                userService.revokeAllUserAccessTokens(user);
+                jwtService.saveUserTokens(user, accessToken, refreshToken);
+
+                //todo подумать как убрать этот null наверное
+                return new TokenResponseDTO(accessToken, refreshToken, null);
             }
         } else {
             System.out.println("не вошли");
@@ -105,30 +99,22 @@ public class UserAuthServiceImpl implements UserAuthService {
         }
     }
 
-    private void revokeAllUserAccessTokens(User user) {
-        List<JWTToken> validUserAccessTokens = tokenRepository
-                .findAllByUser_Id(user.getId());
-        if (!validUserAccessTokens.isEmpty()) {
-//            validUserAccessTokens.forEach(t -> {t.setLoggedOut(true);});
-            jwtService.deleteAllUserTokens(user);
-        }
+//    private void revokeAllUserAccessTokens(User user) {
+//        List<JWTToken> validUserAccessTokens = jwtTokenRepository
+//                .findAllByUser_Id(user.getId());
+//        if (!validUserAccessTokens.isEmpty()) {
+////            validUserAccessTokens.forEach(t -> {t.setLoggedOut(true);});
+//            jwtService.deleteAllUserTokens(user);
+//        }
+//
+//        jwtTokenRepository.saveAll(validUserAccessTokens);
+//    }
 
-        tokenRepository.saveAll(validUserAccessTokens);
-    }
 
-    private void saveUserTokens(User user, String accessToken, String refreshToken) {
-        JWTToken jwtToken = new JWTToken();
-        jwtToken.setUser(user);
-        jwtToken.setAccessToken(accessToken);
-        jwtToken.setRefreshToken(refreshToken);
-//        jwtToken.setLoggedOut(false);
-
-        tokenRepository.save(jwtToken);
-    }
 
     //todo подумать над тем получится ли вынести код внутри этого всего про авторизацию
     @Override
-    public JWTResponseDTO refreshToken(HttpServletRequest request) throws ExpiredJwtException, IllegalArgumentException {
+    public TokenResponseDTO refreshToken(HttpServletRequest request) throws ExpiredJwtException, IllegalArgumentException {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         String refreshToken;
         String username;
@@ -144,9 +130,9 @@ public class UserAuthServiceImpl implements UserAuthService {
             if (jwtService.isValidRefreshToken(refreshToken, user)) {
                 String newAccessToken = jwtService.generateAccessToken(user);
                 String newRefreshToken = jwtService.generateRefreshToken(user);
-                revokeAllUserAccessTokens(user);
-                saveUserTokens(user, newAccessToken, newRefreshToken);
-                return new JWTResponseDTO(newAccessToken, newRefreshToken);
+                userService.revokeAllUserAccessTokens(user);
+                jwtService.saveUserTokens(user, newAccessToken, newRefreshToken);
+                return new TokenResponseDTO(newAccessToken, newRefreshToken, null);
             } else {
                 throw new IllegalArgumentException("Invalid refresh token");
             }

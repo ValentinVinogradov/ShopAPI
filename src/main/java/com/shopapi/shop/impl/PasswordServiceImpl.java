@@ -1,11 +1,8 @@
 package com.shopapi.shop.impl;
 
 import com.shopapi.shop.enums.UUIDTokenType;
-import com.shopapi.shop.models.UUIDToken;
 import com.shopapi.shop.models.User;
 import com.shopapi.shop.services.PasswordService;
-import jakarta.persistence.EntityNotFoundException;
-import org.antlr.v4.runtime.tree.pattern.TokenTagToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,14 +11,16 @@ import org.springframework.stereotype.Service;
 public class PasswordServiceImpl implements PasswordService {
     private final UUIDTokenServiceImpl tokenService;
     private final UserServiceImpl userService;
+    private final JWTServiceImpl jwtService;
 
     private final PasswordEncoder passwordEncoder;
 
     public PasswordServiceImpl(UUIDTokenServiceImpl tokenService,
-                               UserServiceImpl userService,
+                               UserServiceImpl userService, JWTServiceImpl jwtService,
                                PasswordEncoder passwordEncoder) {
         this.tokenService = tokenService;
         this.userService = userService;
+        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -30,10 +29,13 @@ public class PasswordServiceImpl implements PasswordService {
         return userService.existsByEmail(email);
     }
 
+
+    //todo подумать над тем где сделать логаут (потому что пользователь может запомнить ссылку а jwt token
+    // останется
     @Override
     public String generateToken(String email) {
         if (isExistsUserEmail(email)) {
-            return userService.generatePasswordToken(email);
+            return userService.generateToken(email, UUIDTokenType.PASSWORD);
         } else {
             throw new BadCredentialsException("Email doesn't exists");
         }
@@ -49,8 +51,9 @@ public class PasswordServiceImpl implements PasswordService {
     //todo понять надо ли валидировать второй раз токен ? (наверное там как то через сессию)
     @Override
     public void saveNewPassword(String email, String newPassword) {
-        User user = userService.getByEmail(email);
+        User user = userService.getUserByEmail(email);
         userService.updatePassword(user, passwordEncoder.encode(newPassword));
-        tokenService.deletePasswordTypeTokenByUserId(user.getId());
+        tokenService.deleteAllTokensWithTypeByUserId(user.getId(), UUIDTokenType.PASSWORD);
+        userService.revokeAllUserAccessTokens(user);
     }
 }

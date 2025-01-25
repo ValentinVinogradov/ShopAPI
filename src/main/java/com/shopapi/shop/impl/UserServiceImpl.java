@@ -1,106 +1,109 @@
 package com.shopapi.shop.impl;
 
 import com.shopapi.shop.enums.UUIDTokenType;
+import com.shopapi.shop.models.JWTToken;
 import com.shopapi.shop.models.UUIDToken;
 import com.shopapi.shop.models.User;
+import com.shopapi.shop.repositories.JWTTokenRepository;
 import com.shopapi.shop.repositories.UserRepository;
-import com.shopapi.shop.services.UUIDTokenService;
 import com.shopapi.shop.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UUIDTokenServiceImpl tokenService;
+    private final UUIDTokenServiceImpl UUIDTokenService;
+    private final JWTServiceImpl jwtService;
+    private final JWTTokenRepository jwtTokenRepository;
 
 
     public UserServiceImpl(UserRepository userRepository,
-                           UUIDTokenServiceImpl tokenService) {
+                           UUIDTokenServiceImpl UUIDTokenService,
+                           JWTServiceImpl jwtService,
+                           JWTTokenRepository jwtTokenRepository) {
         this.userRepository = userRepository;
-        this.tokenService = tokenService;
+        this.UUIDTokenService = UUIDTokenService;
+        this.jwtService = jwtService;
+        this.jwtTokenRepository = jwtTokenRepository;
     }
 
+    //todo потом везде транз. методы пометить аннотацией Transactional
 
     @Override
-    public User getByUsername(String username) {
+    public User getUserByUsername(String username) {
         return userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
     @Override
-    public User getByEmail(String email) {
+    public User getUserByEmail(String email) {
         return userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with email " + email));
     }
 
     @Override
-    public void updateUsername(String currentUsername, String newUsername) throws IllegalArgumentException{
-        User user = getByUsername(currentUsername);
+    @Transactional
+    public void changeUsername(String currentUsername, String newUsername) throws IllegalArgumentException{
+        User user = getUserByUsername(currentUsername);
         if (existsByUsername(newUsername)) {
             throw new IllegalArgumentException("Username already exists");
         }
-        userRepository.updateUsername(user.getId(), newUsername);
+        user.setUsername(newUsername);
+        userRepository.save(user);
     }
 
     @Override
+    @Transactional
     public void updatePassword(User user, String newPassword) {
         user.setPassword(newPassword);
         userRepository.save(user);
     }
 
-    //todo сделать удаление токена по определенному типу (короче дописать как то красиво я пока набросил)
-
-    //todo переосмыслить весь код этот, нужны ли перечисления и можно ли просто разделить на несколько методов
-    // гпт сказал можно разделить на методы значит разделяем на методы
-
-    public void revokeToken(long userId, UUIDTokenType tokenType) {
-        if (tokenService.existsTokenByUserId(userId)) {
-            switch (tokenType) {
-                case PASSWORD:
-                    tokenService.deletePasswordTypeTokenByUserId(userId);
-                case EMAIL:
-                    tokenService.deleteEmailTypeTokenByUserId(userId);
-            }
+    public void revokeAllTokens(long userId, UUIDTokenType tokenType) {
+        if (UUIDTokenService.existsTokenByUserId(userId)) {
+            UUIDTokenService.deleteAllTokensWithTypeByUserId(userId, tokenType);
         }
     }
 
-    public String generateToken(User user) {
-        UUIDToken token = tokenService.generateToken(user);
+
+    public void revokeAllUserAccessTokens(User user) {
+        List<JWTToken> validUserAccessTokens = jwtTokenRepository
+                .findAllByUser_Id(user.getId());
+        if (!validUserAccessTokens.isEmpty()) {
+//            validUserAccessTokens.forEach(t -> {t.setLoggedOut(true);});
+            jwtService.deleteAllUserTokens(user);
+        }
+
+        jwtTokenRepository.saveAll(validUserAccessTokens);
+    }
+
+    public String generateToken(String email, UUIDTokenType tokenType) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        revokeAllTokens(user.getId(), tokenType);
+        UUIDToken token = UUIDTokenService.generateToken(user, tokenType);
         return token.getToken();
-    }
-
-    public String generateEmailToken(String email) {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        revokeToken(user.getId(), UUIDTokenType.EMAIL);
-        return generateToken(user);
-    }
-
-    public String generatePasswordToken(String email) {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        revokeToken(user.getId(), UUIDTokenType.PASSWORD);
-        return generateToken(user);
     }
 
     public String checkToken(String token, UUIDTokenType tokenType) {
         try {
-            UUIDToken storedToken = tokenService.getToken(token);
-            if (tokenService.isValidUUIDToken(storedToken)) {
+            UUIDToken storedToken = UUIDTokenService.getToken(token);
+            User user = storedToken.getUser();
+            if (UUIDTokenService.isValidUUIDToken(storedToken)) {
+                if (tokenType == UUIDTokenType.EMAIL) {
+                    user.setEmailConfirmed(true);
+                    userRepository.save(user);
+                    UUIDTokenService.deleteAllTokensWithTypeByUserId(user.getId(), tokenType);
+                }
                 return "Success!";
             } else {
-                switch (tokenType) {
-                    case PASSWORD:
-                        tokenService.deletePasswordTypeTokenByUserId(storedToken.getUser().getId());
-                    case EMAIL:
-                        tokenService.deleteEmailTypeTokenByUserId(storedToken.getUser().getId());
-                }
+                UUIDTokenService.deleteAllTokensWithTypeByUserId(storedToken.getUser().getId(), tokenType);
                 throw new BadCredentialsException("Token was expired");
             }
         } catch (EntityNotFoundException e) {
@@ -119,16 +122,16 @@ public class UserServiceImpl implements UserService {
 
 
     //todo придумать как связать смену почты и пароля используя похожие методы
-//    @Override
-//    public void updateEmail(String username, String email) {
-//        if (existsByEmail(email)) {
-//            throw new BadCredentialsException("Email already exists");
-//        }
-//        User user = getByEmail(email);
-//        revokeUserUUIDToken(user.getId());
-//        UUIDToken token = tokenService.generateToken(user);
-//        return token.getToken();
-//    }
+    @Override
+    public void changeEmail(String username, String newEmail) {
+        if (existsByEmail(newEmail)) {
+            throw new BadCredentialsException("Email already exists");
+        }
+        User user = getUserByUsername(username);
+        user.setEmail(newEmail);
+        user.setEmailConfirmed(false);
+        userRepository.save(user);
+    }
 
     @Override
     public List<User> getAll() {

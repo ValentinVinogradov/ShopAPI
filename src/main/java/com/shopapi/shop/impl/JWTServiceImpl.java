@@ -1,5 +1,6 @@
 package com.shopapi.shop.impl;
 
+import com.shopapi.shop.models.JWTToken;
 import com.shopapi.shop.models.Role;
 import com.shopapi.shop.models.User;
 import com.shopapi.shop.repositories.JWTTokenRepository;
@@ -87,22 +88,19 @@ public class JWTServiceImpl {
     }
 
     public boolean isValidAccessToken(String accessToken, UserDetails userDetails) {
-        System.out.println("зашли в проверку");
         final String username = getUsernameFromToken(accessToken);
-        System.out.println(username);
-        boolean isValidToken = tokenRepository.findJWTTokenByAccessToken(accessToken).isPresent();
-        System.out.println(isValidToken);
+        boolean isTokenExists = tokenRepository.findJWTTokenByAccessToken(accessToken).isPresent();
         //        boolean isValidTokenByLogOut = tokenRepository.findByAccessToken(accessToken).map(t -> !t.isLoggedOut()).orElse(false);
 
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(accessToken) && isValidToken;
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(accessToken) && isTokenExists;
     }
 
     public boolean isValidRefreshToken(String refreshToken, User user) {
         final String username = getUsernameFromToken(refreshToken);
-        boolean isValidToken = tokenRepository.findJWTTokenByRefreshToken(refreshToken).isPresent();
+        boolean isTokenExists = tokenRepository.findJWTTokenByRefreshToken(refreshToken).isPresent();
         //        boolean isValidTokenByLogOut = tokenRepository.findByRefreshToken(refreshToken).map(t -> !t.isLoggedOut()).orElse(false);
 
-        return (username.equals(user.getUsername())) && !isTokenExpired(refreshToken) && isValidToken;
+        return (username.equals(user.getUsername())) && !isTokenExpired(refreshToken) && isTokenExists;
     }
 
     private boolean isTokenExpired(String token) {
@@ -111,6 +109,17 @@ public class JWTServiceImpl {
 
     private Date getExpiration(String token) {
         return getClaim(token, Claims::getExpiration);
+    }
+
+    public void saveUserTokens(User user, String accessToken, String refreshToken) {
+        JWTToken jwtToken = new JWTToken();
+        jwtToken.setUser(user);
+        jwtToken.setAccessToken(accessToken);
+        jwtToken.setRefreshToken(refreshToken);
+//        jwtToken.setLoggedOut(false);
+
+        tokenRepository.save(jwtToken);
+
     }
 
     //todo сделать удаление по типу устройства или че то типо такого потом

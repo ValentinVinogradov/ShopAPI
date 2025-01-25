@@ -8,5 +8,6 @@ public class UserFieldsRequestDTO {
     String email;
     String token;
     String newPassword;
+    String newUsername;
     String newEmail;
 }

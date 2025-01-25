@@ -21,11 +21,12 @@ public class UUIDToken {
     private String token;
 
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private UUIDTokenType tokenType;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
 
     @Column(name = "expires_at")
     private Date expiresAt;

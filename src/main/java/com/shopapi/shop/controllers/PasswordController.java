@@ -14,12 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/password/v1")
 public class PasswordController {
     private final PasswordServiceImpl passwordService;
-    private final UserServiceImpl userService;
 
-    public PasswordController(PasswordServiceImpl passwordService,
-                              UserServiceImpl userService) {
+    public PasswordController(PasswordServiceImpl passwordService) {
         this.passwordService = passwordService;
-        this.userService = userService;
     }
 
 
@@ -36,7 +33,6 @@ public class PasswordController {
         }
     }
 
-    //todo добавить валидацию для совпадения что токен конкретно какого то пользователя
     @PostMapping("/check-token")
     public ResponseEntity<String> checkPasswordToken(@RequestBody UserFieldsRequestDTO resetDTO) {
         try {
@@ -48,6 +44,8 @@ public class PasswordController {
         }
     }
 
+
+    //todo дописать логаут из системы
     @PostMapping("/new-password")
     public ResponseEntity<String> saveNewPassword(@RequestBody UserFieldsRequestDTO resetDTO) {
         try {

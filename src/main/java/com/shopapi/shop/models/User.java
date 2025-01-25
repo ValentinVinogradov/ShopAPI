@@ -16,8 +16,7 @@ import java.util.Set;
 @ToString
 @RequiredArgsConstructor
 public class User {
-
-    //todo добавить столбец isEmailConfirmed
+    //todo добавить UUID пользователя вместо обычного id
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +30,9 @@ public class User {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "email_confirmed", nullable = false)
+    private boolean isEmailConfirmed = false;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

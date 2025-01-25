@@ -1,5 +1,6 @@
 package com.shopapi.shop.impl;
 
+import com.shopapi.shop.enums.UUIDTokenType;
 import com.shopapi.shop.models.UUIDToken;
 import com.shopapi.shop.models.User;
 import com.shopapi.shop.repositories.UUIDTokenRepository;
@@ -19,16 +20,17 @@ public class UUIDTokenServiceImpl implements UUIDTokenService {
 
     private final UUIDTokenRepository tokenRepository;
 
-    public UUIDTokenServiceImpl(com.shopapi.shop.repositories.UUIDTokenRepository tokenRepository) {
+    public UUIDTokenServiceImpl(UUIDTokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
     }
 
 
     @Override
-    public UUIDToken generateToken(User user) {
+    public UUIDToken generateToken(User user, UUIDTokenType tokenType) {
         UUIDToken token = new UUIDToken();
         token.setUser(user);
         token.setToken(UUID.randomUUID().toString());
+        token.setTokenType(tokenType);
         token.setExpiresAt(new Date(System.currentTimeMillis() + UUIDTokenExpiration));
         tokenRepository.save(token);
         return token;
@@ -43,12 +45,8 @@ public class UUIDTokenServiceImpl implements UUIDTokenService {
                 .orElseThrow(() -> new EntityNotFoundException("UUID token not found"));
     }
 
-    public void deleteEmailTypeTokenByUserId(long userId) {
-        tokenRepository.deleteEmailTypeTokenByUserId(userId);
-    }
-
-    public void deletePasswordTypeTokenByUserId(long userId) {
-        tokenRepository.deletePasswordTypeTokenByUserId(userId);
+    public void deleteAllTokensWithTypeByUserId(long userId, UUIDTokenType tokenType) {
+        tokenRepository.deleteAllTokensWithTypeByUserId(userId, tokenType);
     }
 
     public boolean existsTokenByUserId(long userId) {

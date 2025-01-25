@@ -52,6 +52,7 @@ public class FavouritesController {
     }
 
     //todo при создании записи о новом избранном надо вернуть кол-во избранных по товару
+    // вроде как не надо
     @PostMapping("/add")
     public ResponseEntity<String> addFavourite(@RequestBody FavouriteRequestDTO favouriteRequestDTO) {
         try {
