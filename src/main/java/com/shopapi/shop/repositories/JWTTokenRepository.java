@@ -22,7 +22,7 @@ public interface JWTTokenRepository extends JpaRepository<JWTToken, Long> {
     @Modifying
 //    @Query("DELETE FROM JWTToken t WHERE t.user.id = :userId AND t.isLoggedOut = false")
     @Query("DELETE FROM JWTToken t WHERE t.user.id = :userId")
-    void deleteByUserId(long userId);
+    void deleteByUserId(String userId);
 
     @Transactional
     @Modifying

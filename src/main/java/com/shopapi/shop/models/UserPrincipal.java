@@ -33,6 +33,10 @@ public class UserPrincipal implements UserDetails {
         return user.getUsername();
     }
 
+    public String getId() {
+        return user.getId().toString();
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

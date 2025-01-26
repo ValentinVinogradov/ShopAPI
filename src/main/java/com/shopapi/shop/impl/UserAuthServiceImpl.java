@@ -123,7 +123,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         }
         try {
             refreshToken = authHeader.substring(7);
-            username = jwtService.getUsernameFromToken(refreshToken);
+            username = jwtService.getUserIdFromToken(refreshToken);
             User user = userRepository.findUserByUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
 

@@ -12,6 +12,7 @@ import java.util.Optional;
 //todo тут необходимые методы дописать для запросов в бд
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByUsername(String username);
+    Optional<User> findUserById(String uuid);
 
     Optional<User> findUserByEmail(String email);
 

@@ -3,12 +3,12 @@ package com.shopapi.shop.impl;
 import com.shopapi.shop.models.JWTToken;
 import com.shopapi.shop.models.Role;
 import com.shopapi.shop.models.User;
+import com.shopapi.shop.models.UserPrincipal;
 import com.shopapi.shop.repositories.JWTTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -39,7 +39,6 @@ public class JWTServiceImpl {
         return generateToken(user, accessTokenExpiration, "access");
     }
 
-
     public String generateRefreshToken(User user) {
         return generateToken(user, refreshTokenExpiration, "refresh");
     }
@@ -49,7 +48,7 @@ public class JWTServiceImpl {
         claims.put("roles", getUserRoles(user));
         claims.put("type", tokenType);
         return Jwts.builder()
-                .subject(user.getUsername())
+                .subject(user.getId().toString())
                 .claims().add(claims)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
@@ -70,7 +69,7 @@ public class JWTServiceImpl {
                 .collect(Collectors.toSet());
     }
 
-    public String getUsernameFromToken(String token) {
+    public String getUserIdFromToken(String token) {
         return getClaim(token, Claims::getSubject);
     }
 
@@ -87,20 +86,20 @@ public class JWTServiceImpl {
                 .getPayload();
     }
 
-    public boolean isValidAccessToken(String accessToken, UserDetails userDetails) {
-        final String username = getUsernameFromToken(accessToken);
+    public boolean isValidAccessToken(String accessToken, UserPrincipal userPrincipal) {
+        final String id = getUserIdFromToken(accessToken);
         boolean isTokenExists = tokenRepository.findJWTTokenByAccessToken(accessToken).isPresent();
         //        boolean isValidTokenByLogOut = tokenRepository.findByAccessToken(accessToken).map(t -> !t.isLoggedOut()).orElse(false);
 
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(accessToken) && isTokenExists;
+        return (id.equals(userPrincipal.getId())) && !isTokenExpired(accessToken) && isTokenExists;
     }
 
     public boolean isValidRefreshToken(String refreshToken, User user) {
-        final String username = getUsernameFromToken(refreshToken);
+        final String id = getUserIdFromToken(refreshToken);
         boolean isTokenExists = tokenRepository.findJWTTokenByRefreshToken(refreshToken).isPresent();
         //        boolean isValidTokenByLogOut = tokenRepository.findByRefreshToken(refreshToken).map(t -> !t.isLoggedOut()).orElse(false);
 
-        return (username.equals(user.getUsername())) && !isTokenExpired(refreshToken) && isTokenExists;
+        return (id.equals(user.getId().toString())) && !isTokenExpired(refreshToken) && isTokenExists;
     }
 
     private boolean isTokenExpired(String token) {
@@ -124,6 +123,6 @@ public class JWTServiceImpl {
 
     //todo сделать удаление по типу устройства или че то типо такого потом
     public void deleteAllUserTokens(User user) {
-        tokenRepository.deleteByUserId(user.getId());
+        tokenRepository.deleteByUserId(user.getId().toString());
     }
 }

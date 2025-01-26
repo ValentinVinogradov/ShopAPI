@@ -2,6 +2,7 @@ package com.shopapi.shop.security;
 
 import com.shopapi.shop.impl.JWTServiceImpl;
 import com.shopapi.shop.impl.UserDetailsServiceImpl;
+import com.shopapi.shop.models.UserPrincipal;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,7 +12,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -36,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         String token;
-        String username;
+        String id;
 
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -45,14 +45,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             token = header.substring(7);
-            username = jwtService.getUsernameFromToken(token);
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = context.getBean(UserDetailsServiceImpl.class).loadUserByUsername(username);
-                if (jwtService.isValidAccessToken(token, userDetails)) {
+            id = jwtService.getUserIdFromToken(token);
+            if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserPrincipal userPrincipal = context.getBean(UserDetailsServiceImpl.class).loadUserById(id);
+                if (jwtService.isValidAccessToken(token, userPrincipal)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            userPrincipal,
                             null,
-                            userDetails.getAuthorities());
+                            userPrincipal.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
@@ -64,7 +64,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Smth went wrong " + e.getMessage());
+            response.getWriter().write("Smth went wrong with authorization: " + e.getMessage());
             return;
         }
         doFilter(request, response, filterChain);
