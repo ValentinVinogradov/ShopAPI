@@ -1,15 +1,15 @@
 package com.shopapi.shop.controllers;
 
-
-import com.shopapi.shop.dto.CartItemRequestDTO;
-import com.shopapi.shop.dto.CartItemResponseDTO;
 import com.shopapi.shop.impl.CartItemServiceImpl;
 import com.shopapi.shop.models.CartItem;
+import com.shopapi.shop.models.UserPrincipal;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/shop_api/v1/cart_items")
@@ -20,20 +20,12 @@ public class CartItemController{
         this.cartItemService = cartItemService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CartItemResponseDTO> getCartItemById(@PathVariable long id) {
+    @PostMapping("/add/product/{productId}")
+    public ResponseEntity<String> addNewCartItem(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable UUID productId) {
         try {
-            CartItemResponseDTO cartItemResponseDTO = cartItemService.getCartItemById(id);
-            return ResponseEntity.ok(cartItemResponseDTO);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    @PostMapping("/add")
-    public ResponseEntity<String> addCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
-        try {
-            cartItemService.addCartItem(cartItemRequestDTO);
+            cartItemService.addNewItem(principal.getId(), productId);
             URI uri = new URI("/shop_api/v1/cart_items");
             return ResponseEntity.created(uri)
                     .body("Cart item added successfully!"); // 201 Created
@@ -43,6 +35,33 @@ public class CartItemController{
         }
     }
 
+    @PostMapping("/increase/{cartItemId}")
+    public ResponseEntity<String> increaseQuantity(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long cartItemId) {
+        try {
+            cartItemService.increaseQuantity(principal.getId(), cartItemId);
+            return ResponseEntity.ok("Successfully increased quantity!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to increase quantity");
+        }
+    }
+
+    @PostMapping("/decrease/{cartItemId}")
+    public ResponseEntity<String> decreaseQuantity(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long cartItemId) {
+        try {
+            cartItemService.decreaseQuantity(principal.getId(), cartItemId);
+            return ResponseEntity.ok("Successfully decreased quantity!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to decrease quantity");
+        }
+    }
+
+
+    //todo респонс дто добавить не весь же CartItem пихать
+    //todo нахуй вообще апдейт нужен
     @PutMapping("/update")
     public ResponseEntity<String> updateCartItem(@RequestBody CartItem cartItem) {
         try {
@@ -54,36 +73,41 @@ public class CartItemController{
         }
     }
 
-    @DeleteMapping("/delete/cart/{cartId}/selected-items")
-    public ResponseEntity<String> deleteSelectedItems(@RequestBody List<Long> cartItemIds) {
+    @DeleteMapping("/delete/selected-items")
+    public ResponseEntity<String> deleteSelectedItems(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody List<Long> cartItemIds) {
         try {
-            cartItemService.deleteSelectedCartItems(cartItemIds);
+            cartItemService.deleteSelectedCartItems(principal.getId(), cartItemIds);
             return ResponseEntity.ok("Selected items successfully deleted!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to delete selected items");
         }
     }
 
-    //todo подумать потом над селектом (реализовал удаление)
-    @DeleteMapping("/delete/cart/{cartId}/all")
-    public ResponseEntity<String> deleteAllCartItems(@PathVariable long cartId) {
+    @DeleteMapping("/delete/{cartItemId}")
+    public ResponseEntity<String> deleteCartItem(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long cartItemId) {
         try {
-            cartItemService.deleteAllItemsByCartId(cartId);
-            return ResponseEntity.ok("All items from cart deleted successfully!"); // 200 OK
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body("Failed to delete items: " + e.getMessage()); // 400 Bad Request
-        }
-    }
-
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
-        try {
-            cartItemService.deleteCartItem(cartItemRequestDTO);
+            cartItemService.deleteCartItemById(principal.getId(), cartItemId);
             return ResponseEntity.ok("Cart item deleted successfully!"); // 200 OK
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body("Failed to delete cart item: " + e.getMessage()); // 400 Bad Request
         }
     }
+
+    //todo подумать потом над селектом (реализовал удаление) (надо ли?)
+//    @DeleteMapping("/delete/cart/{cartId}/all")
+//    public ResponseEntity<String> deleteAllCartItems(@PathVariable long cartId) {
+//        try {
+//            cartItemService.deleteAllItemsByCartId(cartId);
+//            return ResponseEntity.ok("All items from cart deleted successfully!"); // 200 OK
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest()
+//                    .body("Failed to delete items: " + e.getMessage()); // 400 Bad Request
+//        }
+//    }
+
 }

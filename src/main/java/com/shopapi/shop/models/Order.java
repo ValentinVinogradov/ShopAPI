@@ -1,11 +1,18 @@
 package com.shopapi.shop.models;
 
+import com.shopapi.shop.enums.OrderPaymentStatus;
+import com.shopapi.shop.enums.OrderStatus;
+import com.shopapi.shop.services.OrderService;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,18 +22,53 @@ import java.util.Objects;
 @Table(name = "orders")
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "status",nullable = false)
-    private String status;
+    @OneToMany(mappedBy = "order")
+    @ToString.Exclude
+    private List<OrderItem> orderItems = new ArrayList<>();
 
-    @Column(name = "total_price",nullable = false)
+    @Column(name = "status",nullable = false)
+    private OrderStatus orderStatus;
+
+    @Column(name = "payment_status", nullable = false) //todo ? надо ли нуллабл
+    private OrderPaymentStatus orderPaymentStatus;
+
+    @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;
+
+    @Column(name = "total_count", nullable = false)
+    private Integer totalCount;
+
+    @Column(name = "shipping_address")
+    private String shippingAddress;
+
+    @Column(name = "shipping_cost")
+    private BigDecimal shippingCost;
+
+    @Column(name = "delivery_date")
+    private LocalDate deliveryDate;
+
+    @Column(name = "tracking_number")
+    private String trackingNumber;
+
+
+//    @Column(name = "payment_method")
+//    private String paymentMethod;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDate createdAt;
+
+
+
+    //todo всякие доп поля оплата статус оплаты промокод и сертификат
+    // тип службы доставки стоимость доставки если не включено в стоимость
+    // примерная дата доставки
 
     @Override
     public final boolean equals(Object o) {

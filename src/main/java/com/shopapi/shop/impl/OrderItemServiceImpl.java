@@ -3,45 +3,34 @@ package com.shopapi.shop.impl;
 import com.shopapi.shop.models.OrderItem;
 import com.shopapi.shop.repositories.OrderItemRepository;
 import com.shopapi.shop.services.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 /*
 
  */
 @Service
-public class OrderItemServiceImpl extends AbstractService<OrderItem, Long> implements OrderItemService {
-
+public class OrderItemServiceImpl implements OrderItemService {
+    private final CartServiceImpl cartService;
     private final OrderItemRepository orderItemRepository;
-    private final ItemAddiction itemAddiction;
 
-    public OrderItemServiceImpl(OrderItemRepository orderItemRepository, ItemAddiction itemAddiction) {
-        super(orderItemRepository);
+    public OrderItemServiceImpl(CartServiceImpl cartService,
+                                OrderItemRepository orderItemRepository) {
+        this.cartService = cartService;
         this.orderItemRepository = orderItemRepository;
-        this.itemAddiction = itemAddiction;
     }
 
-    @Override
-    public List<OrderItem> getItemsByContainerId(Long containerId) {
-        return itemAddiction.getItemsByContainerId(containerId, orderItemRepository);
+    public OrderItem getOrderItemById(long orderItemId) {
+        return orderItemRepository.findById(orderItemId)
+                .orElseThrow(() -> new EntityNotFoundException("Order item not found"));
     }
 
-    @Override
-    @Transactional
-    public void deleteAllItemsByContainerId(Long containerId) {
-        itemAddiction.deleteAllItemsByContainerId(containerId, orderItemRepository);
+    public void makeSelectedOrderItems(List<Long> cartItemIds) {
+        
     }
 
-    @Override
-    @Transactional
-    public void updateQuantity(Long itemId, int quantity) {
-        itemAddiction.updateQuantity(itemId, quantity, orderItemRepository);
-    }
-
-    @Override
-    public boolean isProductInContainer(Long containerId, long productId) {
-        return itemAddiction.isProductInContainer(containerId, productId, orderItemRepository);
-    }
 }

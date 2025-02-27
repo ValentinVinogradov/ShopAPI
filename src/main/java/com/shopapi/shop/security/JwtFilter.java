@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -36,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         String token;
-        String id;
+        UUID userId;
 
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -45,9 +46,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             token = header.substring(7);
-            id = jwtService.getUserIdFromToken(token);
-            if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserPrincipal userPrincipal = context.getBean(UserDetailsServiceImpl.class).loadUserById(id);
+            userId = jwtService.getUserIdFromToken(token);
+            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserPrincipal userPrincipal = context.getBean(UserDetailsServiceImpl.class).loadUserById(userId);
                 if (jwtService.isValidAccessToken(token, userPrincipal)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userPrincipal,
@@ -55,6 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
                             userPrincipal.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    System.out.println("уст. аутентификацию");
                 }
 
             }

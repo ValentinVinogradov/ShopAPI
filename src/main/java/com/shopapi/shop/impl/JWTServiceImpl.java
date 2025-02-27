@@ -69,8 +69,8 @@ public class JWTServiceImpl {
                 .collect(Collectors.toSet());
     }
 
-    public String getUserIdFromToken(String token) {
-        return getClaim(token, Claims::getSubject);
+    public UUID getUserIdFromToken(String token) {
+        return UUID.fromString(getClaim(token, Claims::getSubject));
     }
 
     private <T> T getClaim(String token, Function<Claims, T> claimResolver) {
@@ -87,19 +87,19 @@ public class JWTServiceImpl {
     }
 
     public boolean isValidAccessToken(String accessToken, UserPrincipal userPrincipal) {
-        final String id = getUserIdFromToken(accessToken);
+        UUID userId = getUserIdFromToken(accessToken);
         boolean isTokenExists = tokenRepository.findJWTTokenByAccessToken(accessToken).isPresent();
         //        boolean isValidTokenByLogOut = tokenRepository.findByAccessToken(accessToken).map(t -> !t.isLoggedOut()).orElse(false);
 
-        return (id.equals(userPrincipal.getId())) && !isTokenExpired(accessToken) && isTokenExists;
+        return (userId.equals(userPrincipal.getId())) && !isTokenExpired(accessToken) && isTokenExists;
     }
 
     public boolean isValidRefreshToken(String refreshToken, User user) {
-        final String id = getUserIdFromToken(refreshToken);
+        UUID userId = getUserIdFromToken(refreshToken);
         boolean isTokenExists = tokenRepository.findJWTTokenByRefreshToken(refreshToken).isPresent();
         //        boolean isValidTokenByLogOut = tokenRepository.findByRefreshToken(refreshToken).map(t -> !t.isLoggedOut()).orElse(false);
 
-        return (id.equals(user.getId().toString())) && !isTokenExpired(refreshToken) && isTokenExists;
+        return (userId.equals(user.getId())) && !isTokenExpired(refreshToken) && isTokenExists;
     }
 
     private boolean isTokenExpired(String token) {
@@ -123,6 +123,6 @@ public class JWTServiceImpl {
 
     //todo сделать удаление по типу устройства или че то типо такого потом
     public void deleteAllUserTokens(User user) {
-        tokenRepository.deleteByUserId(user.getId().toString());
+        tokenRepository.deleteByUserId(user.getId());
     }
 }

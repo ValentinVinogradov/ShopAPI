@@ -1,6 +1,8 @@
 package com.shopapi.shop.controllers;
 
 
+import com.shopapi.shop.dto.ProductCatalogDTO;
+import com.shopapi.shop.dto.ProductSaveDTO;
 import com.shopapi.shop.impl.ProductServiceImpl;
 import com.shopapi.shop.models.Product;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 
 //todo подумать над реализацией гет и пост запросов через дто как то (ниче страшного как выяснилось)
@@ -24,9 +27,9 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProductById(@PathVariable long productId) {
+    public ResponseEntity<ProductCatalogDTO> getProductById(@PathVariable UUID productId) {
         try {
-            return ResponseEntity.ok(productService.getById(productId));
+            return ResponseEntity.ok(productService.getProductOfCatalog(productId));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -34,6 +37,7 @@ public class ProductController {
         }
     }
 
+    //todo подумать над тем чтобы возвращать какую то часть товара для каталога, а при заходе возвращать фул инфу
     @GetMapping("/all")
     public ResponseEntity<List<Product>> getAllProducts() {
         try {
@@ -73,9 +77,9 @@ public class ProductController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PostMapping("/add")
-    public ResponseEntity<String> addProduct(@RequestBody Product product) {
+    public ResponseEntity<String> addProduct(@RequestBody ProductSaveDTO productDTO) {
         try {
-            productService.addProduct(product);
+            productService.addProduct(productDTO);
             URI uri = new URI("/shop_api/v1/products");
             return ResponseEntity.created(uri).body("Product added successfully!");
         } catch (Exception e) {
@@ -84,10 +88,12 @@ public class ProductController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
-    @PutMapping("/update")
-    public ResponseEntity<String> updateProduct(@RequestBody Product product) {
+    @PutMapping("/update/{productId}")
+    public ResponseEntity<String> updateProduct(
+            @PathVariable UUID productId,
+            @RequestBody ProductSaveDTO productDTO) {
         try {
-            productService.updateProduct(product);
+            productService.updateProduct(productId, productDTO);
             URI uri = new URI("/shop_api/v1/products");
             return ResponseEntity.created(uri).body("Product updated successfully!");
         } catch (Exception e) {
@@ -97,7 +103,7 @@ public class ProductController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PatchMapping("/{productId}/change_price")
-    public ResponseEntity<String> updateProductPrice(@PathVariable Long productId, @RequestBody BigDecimal newPrice) {
+    public ResponseEntity<String> updateProductPrice(@PathVariable UUID productId, @RequestBody BigDecimal newPrice) {
         try {
             productService.updateProductPrice(productId, newPrice);
             return ResponseEntity.ok("Price changed to " + newPrice);
@@ -108,7 +114,7 @@ public class ProductController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @PutMapping("/{productId}/apply_discount")
-    public ResponseEntity<String> applyDiscount(@PathVariable long productId, @RequestBody int discountPercentage) {
+    public ResponseEntity<String> applyDiscount(@PathVariable UUID productId, @RequestBody int discountPercentage) {
         try {
             productService.applyDiscount(productId, discountPercentage);
             return ResponseEntity.ok("Discount successfully applied: " + discountPercentage + "%");
@@ -119,7 +125,7 @@ public class ProductController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     @DeleteMapping("/delete/{productId}")
-    public ResponseEntity<String> deleteProductById(@PathVariable long productId) {
+    public ResponseEntity<String> deleteProductById(@PathVariable UUID productId) {
         try {
             productService.deleteById(productId);
             return ResponseEntity.ok("Product deleted successfully!");

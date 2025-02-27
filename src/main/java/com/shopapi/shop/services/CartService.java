@@ -1,17 +1,17 @@
 package com.shopapi.shop.services;
 
-import com.shopapi.shop.dto.CartItemResponseDTO;
+import com.shopapi.shop.dto.CartResponseDTO;
 import com.shopapi.shop.enums.CartTotalPriceOperation;
 import com.shopapi.shop.enums.PromoCodeValidationStatus;
 import com.shopapi.shop.models.Cart;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.UUID;
 
 public interface CartService {
-    List<CartItemResponseDTO> getCartItemsByUserId(long userId);
-    Cart createCart(Long userId);
-    PromoCodeValidationStatus applyPromoCode(long cartId, String promoCode);
+    CartResponseDTO getCartById(UUID userId);
+    Cart createCart(UUID userId);
+    PromoCodeValidationStatus applyPromoCode(UUID cartId, String promoCode);
     void updateTotalPrice(Cart cart, BigDecimal newTotalPrice, CartTotalPriceOperation operation);  // Обновить общую стоимость корзины
 }
 

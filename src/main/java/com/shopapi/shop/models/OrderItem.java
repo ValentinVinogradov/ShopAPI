@@ -10,7 +10,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 @Entity
 @Table(name = "order_item")
 public class OrderItem {
@@ -28,6 +27,9 @@ public class OrderItem {
 
     @Column(name = "quantity")
     private Integer quantity;
+
+    @Column(name = "product_price", nullable = false)
+    private BigDecimal productPrice;
 
     @Override
     public final boolean equals(Object o) {

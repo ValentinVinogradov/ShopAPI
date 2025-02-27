@@ -30,8 +30,6 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
 
-    //todo подумать над тем где сделать логаут (потому что пользователь может запомнить ссылку а jwt token
-    // останется
     @Override
     public String generateToken(String email) {
         if (isExistsUserEmail(email)) {

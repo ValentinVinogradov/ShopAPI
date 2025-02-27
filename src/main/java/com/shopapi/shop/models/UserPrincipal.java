@@ -5,6 +5,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UserPrincipal implements UserDetails {
@@ -25,16 +26,27 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
+        System.out.println("Был вызван метод getPassword");
         return user.getPassword();
     }
 
     @Override
     public String getUsername() {
+        System.out.println("Был вызван метод getUsername");
         return user.getUsername();
     }
 
-    public String getId() {
-        return user.getId().toString();
+    public String getEmail() {
+        System.out.println("Был вызван метод getEmail");
+        return user.getEmail();
+    }
+
+    public String getPhoneNumber() {
+        return null;
+    }
+
+    public UUID getId() {
+        return user.getId();
     }
 
     @Override
@@ -52,8 +64,9 @@ public class UserPrincipal implements UserDetails {
         return true;
     }
 
+    //todo либо это использовать либо свое поле
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.isActive();
     }
 }

@@ -1,14 +1,12 @@
 package com.shopapi.shop.dto;
 
-import lombok.Value;
+import java.util.UUID;
 
 /**
  * DTO for {@link com.shopapi.shop.models.CartItem}
  */
-@Value
-public class CartItemRequestDTO {
-    Long id;
-    Long userId;
-    Long cartId;
-    Long productId;
-}
+public record CartItemRequestDTO(
+//        Long id,
+//        Long cartId,
+        UUID productId
+) {}

@@ -5,9 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface CartRepository extends JpaRepository<Cart, Long> {
-//    @Query("SELECT c FROM Cart c WHERE c.user.id = ?1")
-    Optional<Cart> findByUser_Id(Long userId);
+public interface CartRepository extends JpaRepository<Cart, UUID> {
+    Optional<Cart> findByUser_Id(UUID userId);
 }

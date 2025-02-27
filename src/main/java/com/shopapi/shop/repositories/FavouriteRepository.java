@@ -8,14 +8,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface FavouriteRepository extends JpaRepository<Favourite, Long> {
-    List<Favourite> findAllByUser_Id(Long userId);
-    int findAllByProduct_Id(long productId);
+    List<Favourite> findAllByUser_Id(UUID userId);
+    List<Favourite> findAllByProduct_Id(UUID productId);
 
     @Transactional
     @Modifying
-    @Query("delete from Favourite f where user.id=:userId and product.id=:productId")
-    void deleteByUserAndProduct(long userId, long productId);
+    void deleteByUser_IdAndProduct_Id(UUID userId, UUID productId);
 }

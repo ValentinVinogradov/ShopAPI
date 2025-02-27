@@ -4,10 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
-@Table(name = "cart_items")
+@Table(name = "cart_items", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"cart_id", "product_id"})
+})
 @Getter
 @Setter
 @ToString
@@ -31,6 +34,9 @@ public class CartItem {
     @NonNull
     @Column(name = "quantity",nullable = false)
     private Integer quantity;
+
+    @Column(name = "last_product_price")
+    private BigDecimal lastProductPrice;
 
     @Override
     public final boolean equals(Object o) {

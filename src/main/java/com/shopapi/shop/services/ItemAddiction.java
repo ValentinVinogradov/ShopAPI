@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class ItemAddiction {
@@ -26,7 +27,7 @@ public class ItemAddiction {
         // Пример: найти элемент по ID и обновить его количество
     }
 
-    public <T> boolean isProductInContainer(Long containerId, Long productId, JpaRepository<T, Long> repository) {
+    public <T> boolean isProductInContainer(Long containerId, UUID productId, JpaRepository<T, Long> repository) {
         // Логика для проверки, есть ли товар в контейнере
         // Пример: return repository.existsByContainerIdAndProductId(containerId, productId);
         return false;  // Временно, замените на реальную логику

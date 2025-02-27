@@ -1,12 +1,11 @@
 package com.shopapi.shop.dto;
 
-import lombok.Value;
+import java.util.UUID;
 
 /**
  * DTO for {@link com.shopapi.shop.models.Favourite}
  */
-@Value
-public class FavouriteRequestDTO {
-    Long userId;
-    Long productId;
-}
+public record FavouriteRequestDTO(
+        UUID userId,
+        UUID productId
+) {}

@@ -13,7 +13,6 @@ import java.util.*;
 @ToString
 @RequiredArgsConstructor
 public class User {
-    //todo добавить UUID пользователя вместо обычного id
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -31,6 +30,9 @@ public class User {
     @Column(name = "email_confirmed", nullable = false)
     private boolean isEmailConfirmed = false;
 
+    @Column(name = "active", nullable = false)
+    private boolean isActive = false;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -42,7 +44,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
-    private List<JWTToken> token;
+    private List<JWTToken> tokens;
 
 
     @Override

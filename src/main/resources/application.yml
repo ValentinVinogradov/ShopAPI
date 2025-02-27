@@ -20,12 +20,11 @@ app:
   security:
     jwt:
       secret: my-secret-keyfjfqofkopwfkofoefjefleflwsmlmsfsfnef
-      access-token-expiration: 300000
+      access-token-expiration: 900000
       refresh-token-expiration: 604800000
     uuid:
       token-expiration: 60000
 #      token-expiration: 3600000
-#logging:
-#  level:
-#    org:
-#      hibernate: DEBUG
+logging:
+  level:
+    org.springframework.security: trace

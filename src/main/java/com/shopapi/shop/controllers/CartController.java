@@ -1,13 +1,16 @@
 package com.shopapi.shop.controllers;
 
-import com.shopapi.shop.dto.CartItemResponseDTO;
+import com.shopapi.shop.dto.CartResponseDTO;
 import com.shopapi.shop.enums.PromoCodeValidationStatus;
 import com.shopapi.shop.impl.CartServiceImpl;
+import com.shopapi.shop.models.UserPrincipal;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.security.Principal;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/shop_api/v1/carts")
@@ -18,10 +21,12 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<CartItemResponseDTO>> getCartItemsFromCartByUserId(@PathVariable long userId) {
+
+    @GetMapping("/get-cart")
+    public ResponseEntity<CartResponseDTO> getCartByUserId(
+            @AuthenticationPrincipal UserPrincipal principal) {
         try {
-            return ResponseEntity.ok(cartService.getCartItemsByUserId(userId));
+            return ResponseEntity.ok(cartService.getCartById(principal.getId()));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -31,7 +36,7 @@ public class CartController {
 
     //todo пересмотреть по поводу цен динамических
     @PostMapping("/{cartId}/apply_promo")
-    public ResponseEntity<String> applyPromoCode(@PathVariable long cartId, @RequestParam String promoCode) {
+    public ResponseEntity<String> applyPromoCode(@PathVariable UUID cartId, @RequestParam String promoCode) {
         PromoCodeValidationStatus status = cartService.applyPromoCode(cartId, promoCode);
 
         return switch (status) {

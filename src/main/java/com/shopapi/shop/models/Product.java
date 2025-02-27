@@ -2,16 +2,13 @@ package com.shopapi.shop.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import com.vladmihalcea.hibernate.type.json.JsonType;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import org.hibernate.annotations.Type;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "products")
@@ -21,8 +18,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -39,18 +36,30 @@ public class Product {
     @Column(name = "old_price")
     private BigDecimal oldPrice;
 
+    @Column(name = "discount_percentage")
+    private Integer discountPercentage;
+
+    @Column(name = "review_count")
+    private Integer reviewCount;
+
+    @Column(name = "rating")
+    private Double rating;
+
     @Column(name = "stock_quantity",nullable = false)
     private Integer stockQuantity;
 
+    @Column(name = "group_id", nullable = false)
+    private UUID groupId;
+
 //     Поле для хранения JSON-атрибутов
-    @Column(name = "attributes", columnDefinition = "JSONB")
+    @Column(name = "attributes", columnDefinition = "JSONB", nullable = false)
     @Type(JsonType.class)
     private Map<String, Object> attributes = new HashMap<>();
 
-    @Column(name = "img")
+    @Column(name = "img", nullable = false)
     private List<String> img;
 
-    @Column(name = "last_date", nullable = false)
+    @Column(name = "last_date")
     private LocalDate lastDate;
 
     @Override

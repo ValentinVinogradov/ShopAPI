@@ -6,9 +6,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
-    List<Answer> findAnswersByUser_Id(long userId);
-    Optional<Answer> findAnswerByUser_IdAndQuestion_Id(long userId, long questionId);
+    List<Answer> findAllByUser_Id(UUID userId);
+    Optional<Answer> findAllByUser_IdAndQuestion_Id(UUID userId, long questionId);
+    void deleteAllByUser_IdAndQuestion_Id(UUID userId, long questionId);
+
 }

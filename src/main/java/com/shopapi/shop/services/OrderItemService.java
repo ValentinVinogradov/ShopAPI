@@ -2,8 +2,9 @@ package com.shopapi.shop.services;
 
 import com.shopapi.shop.models.OrderItem;
 
+import java.util.List;
 
-public interface OrderItemService extends GenericItemService<OrderItem, Long> {
-    //доп методы
+
+public interface OrderItemService {
 }
 

@@ -1,14 +1,19 @@
 package com.shopapi.shop.dto;
 
-import lombok.Value;
+
+import java.math.BigDecimal;
+import java.util.UUID;
 
 /**
  * DTO for {@link com.shopapi.shop.models.CartItem}
  */
-@Value
-public class CartItemResponseDTO {
-    Long id;
-    Long cartId;
-    Long productId;
-    Integer quantity;
-}
+public record CartItemResponseDTO(
+        Long id,
+        UUID cartId,
+        UUID productId,
+        String productName,
+        String productDescription,
+        BigDecimal productPrice,
+        String productFirstImg,
+        Integer quantity
+) {}

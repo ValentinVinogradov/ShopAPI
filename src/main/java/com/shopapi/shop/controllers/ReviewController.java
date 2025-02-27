@@ -3,12 +3,15 @@ package com.shopapi.shop.controllers;
 import com.shopapi.shop.dto.ReviewRequestDTO;
 import com.shopapi.shop.dto.ReviewResponseDTO;
 import com.shopapi.shop.impl.ReviewServiceImpl;
+import com.shopapi.shop.models.UserPrincipal;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/shop_api/v1/reviews")
@@ -23,7 +26,7 @@ public class ReviewController {
     public ResponseEntity<ReviewResponseDTO> getReviewById(@PathVariable long reviewId) {
         try {
             ReviewResponseDTO reviewResponseDTO = reviewService.getReviewById(reviewId);
-            return ResponseEntity.status(HttpStatus.OK).body(reviewResponseDTO);
+            return ResponseEntity.ok(reviewResponseDTO);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -31,8 +34,8 @@ public class ReviewController {
         }
     }
 
-    @GetMapping("/product/{productId}")
-    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByProductId(@PathVariable long productId) {
+    @GetMapping("/product/{productId}/all")
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByProductId(@PathVariable UUID productId) {
         try {
             List<ReviewResponseDTO> reviewResponseDTOs = reviewService.getReviewsByProductId(productId);
             return ResponseEntity.ok(reviewResponseDTOs);
@@ -43,10 +46,11 @@ public class ReviewController {
         }
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByUserId(@PathVariable long userId) {
+    @GetMapping("/user/all")
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByUserId(
+            @AuthenticationPrincipal UserPrincipal principal) {
         try {
-            List<ReviewResponseDTO> reviewResponseDTOs = reviewService.getReviewsByUserId(userId);
+            List<ReviewResponseDTO> reviewResponseDTOs = reviewService.getReviewsByUserId(principal.getId());
             return ResponseEntity.ok(reviewResponseDTOs);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -56,9 +60,11 @@ public class ReviewController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addReview(@RequestBody ReviewRequestDTO reviewRequestDTO) {
+    public ResponseEntity<String> addReview(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody ReviewRequestDTO reviewRequestDTO) {
         try {
-            reviewService.addReview(reviewRequestDTO);
+            reviewService.addReview(principal.getId(), reviewRequestDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("Review added successful!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to add review: " + e.getMessage());
@@ -66,20 +72,24 @@ public class ReviewController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateReview(@RequestBody ReviewRequestDTO reviewRequestDTO) {
+    public ResponseEntity<String> updateReview(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody ReviewRequestDTO reviewRequestDTO) {
         try {
-            reviewService.updateReview(reviewRequestDTO);
-            return ResponseEntity.status(HttpStatus.OK).body("Review updated successful!");
+            reviewService.updateReview(principal.getId(), reviewRequestDTO);
+            return ResponseEntity.ok("Review updated successful!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to update review: " + e.getMessage());
         }
     }
 
-    @DeleteMapping("/delete/{reviewId}")
-    public ResponseEntity<String> deleteReviewById(@PathVariable long reviewId) {
+    @DeleteMapping("/delete/{productId}")
+    public ResponseEntity<String> deleteReviewById(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable UUID productId) {
         try {
-            reviewService.deleteReviewById(reviewId);
-            return ResponseEntity.status(HttpStatus.OK).body("Review deleted successfully");
+            reviewService.deleteReviewById(principal.getId(), productId);
+            return ResponseEntity.ok("Review deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to delete review: " + e.getMessage());
         }

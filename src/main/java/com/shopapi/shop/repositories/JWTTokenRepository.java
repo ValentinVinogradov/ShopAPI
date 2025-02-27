@@ -8,21 +8,20 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface JWTTokenRepository extends JpaRepository<JWTToken, Long> {
     Optional<JWTToken> findJWTTokenByAccessToken(String token);
 
     Optional<JWTToken> findJWTTokenByRefreshToken(String token);
 
-//    @Query("select t from JWTToken t inner join t.user u where u.id = :userId")
-//    @Query("select t from JWTToken t inner join t.user u where u.id = :userId and t.isLoggedOut =
-    List<JWTToken> findAllByUser_Id(long userId);
+    List<JWTToken> findAllByUser_Id(UUID userId);
 
     @Transactional
     @Modifying
 //    @Query("DELETE FROM JWTToken t WHERE t.user.id = :userId AND t.isLoggedOut = false")
     @Query("DELETE FROM JWTToken t WHERE t.user.id = :userId")
-    void deleteByUserId(String userId);
+    void deleteByUserId(UUID userId);
 
     @Transactional
     @Modifying

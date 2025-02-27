@@ -8,22 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
-//todo тут необходимые методы дописать для запросов в бд
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findUserByUsername(String username);
-    Optional<User> findUserById(String uuid);
 
     Optional<User> findUserByEmail(String email);
 
-//    @Modifying
-//    @Transactional
-//    @Query("UPDATE User u SET u.username = :username WHERE u.id = :id")
-//    void updateUsername(@Param("id") Long userId, @Param("username") String username);
-
-//    @Modifying
-//    @Transactional
-//    @Query("UPDATE User u SET u.password = :password WHERE u.id = :id")
-//    void updatePassword(@Param("id") Long userId, @Param("password") String password);
 }
 

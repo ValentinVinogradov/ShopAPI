@@ -1,13 +1,12 @@
 package com.shopapi.shop.dto;
 
-import lombok.Value;
+
+import java.util.UUID;
 
 /**
  * DTO for {@link com.shopapi.shop.models.Question}
  */
-@Value
-public class QuestionRequestDTO {
-    Long productId;
-    Long userId;
-    String content;
-}
+public record QuestionRequestDTO(
+        UUID productId,
+        String content
+) {}

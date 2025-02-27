@@ -3,12 +3,15 @@ package com.shopapi.shop.controllers;
 import com.shopapi.shop.dto.AnswerRequestDTO;
 import com.shopapi.shop.dto.AnswerResponseDTO;
 import com.shopapi.shop.impl.AnswerServiceImpl;
+import com.shopapi.shop.models.UserPrincipal;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/shop_api/v1/answers")
@@ -33,10 +36,11 @@ public class AnswerController{
         }
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<AnswerResponseDTO>> getAnswersByUserId(@PathVariable long userId) {
+    @GetMapping("/user/all")
+    public ResponseEntity<List<AnswerResponseDTO>> getAnswersByUserId(
+            @AuthenticationPrincipal UserPrincipal principal) {
         try{
-            List<AnswerResponseDTO> answerResponseDTOs = answerService.getAnswersByUserId(userId);
+            List<AnswerResponseDTO> answerResponseDTOs = answerService.getAnswersByUserId(principal.getId());
             return ResponseEntity.ok(answerResponseDTOs);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -45,19 +49,13 @@ public class AnswerController{
         }
     }
 
-//    @GetMapping("/question/{questionId}")
-//    public ResponseEntity<List<Answer>> getAnswersByQuestionId(@PathVariable long questionId) {
-//        List<Answer> answers = answerService.getAnswersByQuestionId(questionId);
-//        if (answers.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404, если ответы не найдены
-//        }
-//        return ResponseEntity.ok(answers); // 200, если ответы найдены
-//    }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addAnswer(@RequestBody AnswerRequestDTO answerRequestDTO) {
+    public ResponseEntity<String> addAnswer(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody AnswerRequestDTO answerRequestDTO) {
         try {
-            answerService.addAnswer(answerRequestDTO);
+            answerService.addAnswer(principal.getId(), answerRequestDTO);
             URI uri = new URI("/shop_api/v1/answers");
             return ResponseEntity.created(uri).body("Answer added successfully!");
         } catch (Exception e) {
@@ -67,9 +65,11 @@ public class AnswerController{
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateAnswer(@RequestBody AnswerRequestDTO answerRequestDTO) {
+    public ResponseEntity<String> updateAnswer(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody AnswerRequestDTO answerRequestDTO) {
         try {
-            answerService.updateAnswer(answerRequestDTO);
+            answerService.updateAnswer(principal.getId(), answerRequestDTO);
             return ResponseEntity.ok("Answer updated successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to update answer: " + e.getMessage());
@@ -77,10 +77,12 @@ public class AnswerController{
     }
 
 
-    @DeleteMapping("/delete/{answerId}")
-    public ResponseEntity<String> deleteAnswerById(@PathVariable long answerId) {
+    @DeleteMapping("/delete/{questionId}")
+    public ResponseEntity<String> deleteAnswerById(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable long questionId) {
         try {
-            answerService.deleteAnswerById(answerId);
+            answerService.deleteAnswerById(principal.getId(), questionId);
             return ResponseEntity.ok("Answer deleted successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to delete answer: " + e.getMessage());

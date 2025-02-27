@@ -47,10 +47,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-        provider.setUserDetailsService(userDetailsService);
+    public AuthenticationProvider customDaoAuthenticationProvider() {
+//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+//        provider.setUserDetailsService(userDetailsService);
+        CustomDaoAuthenticationProvider provider = new CustomDaoAuthenticationProvider(
+                userDetailsService,
+                new BCryptPasswordEncoder(12));
+        System.out.println("Установили провайдер");
         return provider;
     }
 
@@ -80,6 +84,9 @@ public class SecurityConfig {
                                 "/shop_api/v1/reviews/product/{productId}",
                                 "/shop_api/v1/questions/{questionId}",
                                 "/shop_api/v1/questions/product/{productId}").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/users/v1/check-signup-token"
+                        ).permitAll()
                         .requestMatchers("/admin/v1/**").hasRole("ADMIN") // Доступ для админов
                         .anyRequest().authenticated()
                 )

@@ -1,17 +1,14 @@
 package com.shopapi.shop.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Value;
 
-@Value
-public class TokenResponseDTO {
+public record FullTokenResponseDTO (
     @JsonProperty("access-token")
-    String accessToken;
+    String accessToken,
 
     @JsonProperty("refresh-token")
-    String refreshToken;
+    String refreshToken,
 
     @JsonProperty("uuid-token")
-    String uuidToken;
-}
+    String uuidToken
+) {}

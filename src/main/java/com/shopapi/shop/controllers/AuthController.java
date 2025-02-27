@@ -22,20 +22,15 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "hello";
-    }
-
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody UserSignUpRequestDTO userSignUpRequestDTO) {
-        if (authService.existsByEmail(userSignUpRequestDTO.getEmail())) {
+        if (authService.existsByEmail(userSignUpRequestDTO.email())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("User already exists with email: " + userSignUpRequestDTO.getEmail());
+                    .body("User already exists with email: " + userSignUpRequestDTO.email());
         }
-        if (authService.existsByUsername(userSignUpRequestDTO.getUsername())) {
+        if (authService.existsByUsername(userSignUpRequestDTO.username())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("User already exists with username: " + userSignUpRequestDTO.getUsername());
+                    .body("User already exists with username: " + userSignUpRequestDTO.username());
         }
         try {
             URI uri = new URI("/auth/v1");
@@ -53,7 +48,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid username or password: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to sign-in");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to sign-in: " + e.getMessage());
         }
     }
 

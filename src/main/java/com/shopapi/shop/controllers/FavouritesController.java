@@ -3,13 +3,14 @@ package com.shopapi.shop.controllers;
 import com.shopapi.shop.dto.FavouriteRequestDTO;
 import com.shopapi.shop.impl.FavouriteServiceImpl;
 import com.shopapi.shop.dto.FavouriteResponseDTO;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import com.shopapi.shop.models.UserPrincipal;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/shop_api/v1/favourites")
@@ -21,31 +22,14 @@ public class FavouritesController {
         this.favouriteService = favouriteService;
     }
 
-    @GetMapping("/{favouriteId}")
-    public ResponseEntity<FavouriteResponseDTO> getFavourite(@PathVariable long favouriteId) {
+    @GetMapping("/user")
+    public ResponseEntity<List<FavouriteResponseDTO>> getFavouritesByUser(
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
         try {
-            FavouriteResponseDTO favouriteResponseDTO = favouriteService.getFavouriteById(favouriteId);
-            return ResponseEntity.ok(favouriteResponseDTO);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<FavouriteResponseDTO>> getFavouritesByUser(@PathVariable long userId) {
-        try {
-            List<FavouriteResponseDTO> favouriteResponseDTOs = favouriteService.getFavouritesByUserId(userId);
+            List<FavouriteResponseDTO> favouriteResponseDTOs = favouriteService.
+                    getFavouritesByUserId(principal.getId());
             return ResponseEntity.ok(favouriteResponseDTOs);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    @GetMapping("/product/{productId}")
-    public ResponseEntity<Integer> getAllFavouritesByProduct(@PathVariable long productId) {
-        try {
-            Integer countOfFavourites = favouriteService.getAllFavouritesByProductId(productId);
-            return ResponseEntity.ok(countOfFavourites);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -64,10 +48,12 @@ public class FavouritesController {
         }
     }
 
-    @DeleteMapping("/delete/{favouriteId}")
-    public ResponseEntity<String> deleteFavourite(@PathVariable long favouriteId) {
+    @DeleteMapping("/delete/{productId}")
+    public ResponseEntity<String> deleteFavourite(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable UUID productId) {
         try {
-            favouriteService.deleteFavouriteById(favouriteId);
+            favouriteService.deleteFavouriteById(principal.getId(), productId);
             return ResponseEntity.ok("Favourite deleted successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to delete favourite: " + e.getMessage());

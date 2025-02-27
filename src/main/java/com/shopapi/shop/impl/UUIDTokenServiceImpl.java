@@ -24,7 +24,6 @@ public class UUIDTokenServiceImpl implements UUIDTokenService {
         this.tokenRepository = tokenRepository;
     }
 
-
     @Override
     public UUIDToken generateToken(User user, UUIDTokenType tokenType) {
         UUIDToken token = new UUIDToken();
@@ -45,11 +44,11 @@ public class UUIDTokenServiceImpl implements UUIDTokenService {
                 .orElseThrow(() -> new EntityNotFoundException("UUID token not found"));
     }
 
-    public void deleteAllTokensWithTypeByUserId(long userId, UUIDTokenType tokenType) {
+    public void deleteAllTokensWithTypeByUserId(UUID userId, UUIDTokenType tokenType) {
         tokenRepository.deleteAllTokensWithTypeByUserId(userId, tokenType);
     }
 
-    public boolean existsTokenByUserId(long userId) {
+    public boolean existsTokenByUserId(UUID userId) {
         return tokenRepository.findUUIDTokenByUser_Id(userId).isPresent();
     }
 }

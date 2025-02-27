@@ -2,7 +2,6 @@ package com.shopapi.shop.controllers;
 
 import com.shopapi.shop.dto.UserFieldsRequestDTO;
 import com.shopapi.shop.impl.PasswordServiceImpl;
-import com.shopapi.shop.impl.UserServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +26,7 @@ public class PasswordController {
     @PostMapping("/generate-password-token")
     public ResponseEntity<String> generatePasswordToken(@RequestBody UserFieldsRequestDTO resetDTO)  {
         try {
-            return ResponseEntity.ok(passwordService.generateToken(resetDTO.getEmail()));
+            return ResponseEntity.ok(passwordService.generateToken(resetDTO.email()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to generate password token");
         }
@@ -36,7 +35,7 @@ public class PasswordController {
     @PostMapping("/check-token")
     public ResponseEntity<String> checkPasswordToken(@RequestBody UserFieldsRequestDTO resetDTO) {
         try {
-            return ResponseEntity.ok(passwordService.checkPasswordToken(resetDTO.getToken()));
+            return ResponseEntity.ok(passwordService.checkPasswordToken(resetDTO.token()));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -49,7 +48,7 @@ public class PasswordController {
     @PostMapping("/new-password")
     public ResponseEntity<String> saveNewPassword(@RequestBody UserFieldsRequestDTO resetDTO) {
         try {
-            passwordService.saveNewPassword(resetDTO.getEmail(), resetDTO.getNewPassword());
+            passwordService.saveNewPassword(resetDTO.email(), resetDTO.newPassword());
             return ResponseEntity.ok().body("Password changed successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to set new password:" + e.getMessage());
