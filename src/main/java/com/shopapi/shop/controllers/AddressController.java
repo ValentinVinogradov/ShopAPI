@@ -40,6 +40,19 @@ public class AddressController {
         }
     }
 
+    @PostMapping("/change-active/{activeAddressId}")
+    public ResponseEntity<String> changeActiveAddress(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable UUID activeAddressId
+    ) {
+        try {
+            addressService.changeActiveAddress(principal.getId(), activeAddressId);
+            return ResponseEntity.ok("Address successfully changed to active!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to change activity of address");
+        }
+    }
+
     //todo где то тут сделать метод переключающий новый адрес
     @PostMapping("/update/{addressId}")
     public ResponseEntity<String> updateAddress(

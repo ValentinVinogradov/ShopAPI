@@ -1,5 +1,6 @@
 package com.shopapi.shop.impl;
 
+import com.shopapi.shop.dto.JWTTokenResponseDTO;
 import com.shopapi.shop.models.JWTToken;
 import com.shopapi.shop.models.Role;
 import com.shopapi.shop.models.User;
@@ -34,6 +35,14 @@ public class JWTServiceImpl {
         this.tokenRepository = tokenRepository;
     }
 
+    public JWTTokenResponseDTO generateJwtTokens(User user) {
+        String accessToken = generateAccessToken(user);
+        String refreshToken = generateRefreshToken(user);
+
+        saveUserTokens(user, accessToken, refreshToken);
+
+        return new JWTTokenResponseDTO(accessToken, refreshToken);
+    }
 
     public String generateAccessToken(User user) {
         return generateToken(user, accessTokenExpiration, "access");
@@ -118,7 +127,17 @@ public class JWTServiceImpl {
 //        jwtToken.setLoggedOut(false);
 
         tokenRepository.save(jwtToken);
+    }
 
+    public void revokeAllUserAccessTokens(User user) {
+        List<JWTToken> validUserAccessTokens = tokenRepository
+                .findAllByUser_Id(user.getId());
+        if (!validUserAccessTokens.isEmpty()) {
+//            validUserAccessTokens.forEach(t -> {t.setLoggedOut(true);});
+            deleteAllUserTokens(user);
+        }
+
+        tokenRepository.saveAll(validUserAccessTokens);
     }
 
     //todo сделать удаление по типу устройства или че то типо такого потом

@@ -1,5 +1,7 @@
 package com.shopapi.shop.security;
 
+import com.shopapi.shop.impl.Oauth2UserServiceImpl;
+import com.shopapi.shop.impl.OidcUserServiceImpl;
 import com.shopapi.shop.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,7 +9,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -31,12 +32,21 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final UserLogoutHandler logoutHandler;
+    private final CustomOauth2SuccessHandler customOauth2SuccessHandler;
+    private final Oauth2UserServiceImpl oauth2UserService;
+    private final OidcUserServiceImpl oidcUserService;
     private final JwtFilter jwtFilter;
 
     public SecurityConfig(UserDetailsServiceImpl userDetailsService,
                           UserLogoutHandler logoutHandler,
+                          CustomOauth2SuccessHandler customOauth2SuccessHandler,
+                          Oauth2UserServiceImpl oauth2UserService,
+                          OidcUserServiceImpl oidcUserService,
                           JwtFilter jwtFilter) {
         this.logoutHandler = logoutHandler;
+        this.customOauth2SuccessHandler = customOauth2SuccessHandler;
+        this.oauth2UserService = oauth2UserService;
+        this.oidcUserService = oidcUserService;
         this.jwtFilter = jwtFilter;
         this.userDetailsService = userDetailsService;
     }
@@ -48,14 +58,9 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider customDaoAuthenticationProvider() {
-//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-//        provider.setUserDetailsService(userDetailsService);
-        CustomDaoAuthenticationProvider provider = new CustomDaoAuthenticationProvider(
+        return new CustomDaoAuthenticationProvider(
                 userDetailsService,
                 new BCryptPasswordEncoder(12));
-        System.out.println("Установили провайдер");
-        return provider;
     }
 
     @Bean
@@ -72,8 +77,14 @@ public class SecurityConfig {
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/v1/**",
-                                        "/password/v1/**").permitAll()
+                        .requestMatchers(
+                                "/auth/v1/**",
+                                "/password/v1/**",
+                                "/login/**",
+                                "/favicon.ico/**",
+                                "/resources/**",
+                                "/static/**",
+                                "/oauth/v1/success/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/shop_api/v1/answers/{answerId}",
                                 "/shop_api/v1/products/{productId}",
@@ -90,6 +101,11 @@ public class SecurityConfig {
                         .requestMatchers("/admin/v1/**").hasRole("ADMIN") // Доступ для админов
                         .anyRequest().authenticated()
                 )
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(customOauth2SuccessHandler)
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(oauth2UserService)
+                                .oidcUserService(oidcUserService)))
                 .httpBasic(Customizer.withDefaults()) //!!!
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // API stateless (без сессий)

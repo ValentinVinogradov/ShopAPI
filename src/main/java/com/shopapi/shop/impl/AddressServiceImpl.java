@@ -7,9 +7,7 @@ import com.shopapi.shop.repositories.AddressRepository;
 import com.shopapi.shop.services.AddressService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,6 +20,7 @@ public class AddressServiceImpl implements AddressService {
         this.addressRespository = addressRespository;
         this.userService = userService;
     }
+
 
     public void addAddress(UUID userId, AddressRequestDTO addressRequestDTO) {
         User user = userService.getById(userId);
@@ -41,6 +40,23 @@ public class AddressServiceImpl implements AddressService {
         newAddress.setActive(true);
         addressRespository.save(newAddress);
     }
+
+    public void changeActiveAddress(UUID userId, UUID activeAddressId) {
+        Address newActiveAddress = addressRespository.findByUser_IdAndId(userId, activeAddressId)
+                .orElseThrow(() -> new EntityNotFoundException("Address not found"));
+
+        addressRespository.findActiveAddressByUserId(userId).ifPresent(currentActiveAddress -> {
+            if (currentActiveAddress.getId().equals(activeAddressId)) {
+                throw new IllegalStateException("The address is already active.");
+            }
+            currentActiveAddress.setActive(false);
+            addressRespository.save(currentActiveAddress);
+        });
+
+        newActiveAddress.setActive(true);
+        addressRespository.save(newActiveAddress);
+    }
+
 
     public void updateAddress(UUID userId, UUID addressId, AddressRequestDTO addressRequestDTO) {
         //todo
@@ -65,7 +81,7 @@ public class AddressServiceImpl implements AddressService {
                 .orElseThrow(() -> new EntityNotFoundException("Address not found"));
 
         if (address.getUser().getId().equals(userId)) {
-            addressRespository.deleteById(addressId);;
+            addressRespository.deleteById(addressId);
         } else {
             throw new RuntimeException("Failed to delete address");
         }

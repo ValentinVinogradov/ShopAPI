@@ -2,7 +2,7 @@ package com.shopapi.shop.impl;
 
 import com.shopapi.shop.dto.JWTTokenResponseDTO;
 import com.shopapi.shop.enums.UUIDTokenType;
-import com.shopapi.shop.models.JWTToken;
+import com.shopapi.shop.models.Role;
 import com.shopapi.shop.models.UUIDToken;
 import com.shopapi.shop.models.User;
 import com.shopapi.shop.repositories.JWTTokenRepository;
@@ -23,17 +23,27 @@ public class UserServiceImpl implements UserService {
     private final UUIDTokenServiceImpl UUIDTokenService;
     private final JWTServiceImpl jwtService;
     private final JWTTokenRepository jwtTokenRepository;
+    private final RoleServiceImpl roleService;
 
 
 
     public UserServiceImpl(UserRepository userRepository,
                            UUIDTokenServiceImpl UUIDTokenService,
                            JWTServiceImpl jwtService,
-                           JWTTokenRepository jwtTokenRepository) {
+                           JWTTokenRepository jwtTokenRepository,
+                           RoleServiceImpl roleService) {
         this.userRepository = userRepository;
         this.UUIDTokenService = UUIDTokenService;
         this.jwtService = jwtService;
         this.jwtTokenRepository = jwtTokenRepository;
+        this.roleService = roleService;
+    }
+
+    public User createUser(String username, String email) {
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        return user;
     }
 
     //todo потом везде транз. методы пометить аннотацией Transactional
@@ -42,6 +52,40 @@ public class UserServiceImpl implements UserService {
     public User getUserByUsername(String username) {
         return userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+    }
+
+    public User getUserByOauth2Id(String oauth2Id) {
+        return userRepository.findUserByOauth2Id(oauth2Id)
+                .orElse(null);
+    }
+
+    public User getUserByIdentifier(String identifier) {
+        System.out.println("Зашли в метод load");
+        User user;
+        if (identifier == null || identifier.isEmpty()) {
+            throw new IllegalArgumentException("Login cannot be null or empty");
+        }
+
+        if (isEmail(identifier)) {
+            user = getUserByEmail(identifier);
+            if (!user.isEmailConfirmed()) {
+                throw new BadCredentialsException("Email is not confirmed to sign-in");
+            }
+        } else if (isPhoneNumber(identifier)) {
+            return null;
+        } else {
+            user = getUserByUsername(identifier);
+        }
+        return user;
+    }
+
+
+    public static boolean isEmail(String login) {
+        return login != null && login.contains("@");
+    }
+
+    public static boolean isPhoneNumber(String login) {
+        return login != null && login.matches("^\\+?[0-9]{10,15}$"); // Пример для проверки номера телефона
     }
 
     @Override
@@ -74,21 +118,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
-    public void revokeAllUserAccessTokens(User user) {
-        List<JWTToken> validUserAccessTokens = jwtTokenRepository
-                .findAllByUser_Id(user.getId());
-        if (!validUserAccessTokens.isEmpty()) {
-//            validUserAccessTokens.forEach(t -> {t.setLoggedOut(true);});
-            jwtService.deleteAllUserTokens(user);
-        }
-
-        jwtTokenRepository.saveAll(validUserAccessTokens);
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
+
     public String generateToken(String email, UUIDTokenType tokenType) {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User user = getUserByEmail(email);
         revokeAllTokens(user.getId(), tokenType); //todo это под вопросом надо ли (вроде надо при повторной генерации)
         UUIDToken token = UUIDTokenService.generateToken(user, tokenType);
         return token.getToken();
@@ -189,6 +225,18 @@ public class UserServiceImpl implements UserService {
         User user = getUserByUsername(username);
         user.setEmail(newEmail);
         user.setEmailConfirmed(false);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void createNewOAuthUser(String email, String username, String avatarUrl) {
+        User user = new User();
+        Role userRole = roleService.getRoleByName("USER");
+        // Установить роль по умолчанию
+        user.getRoles().add(userRole);
+        user.setUsername(username);
+        user.setEmail(email);
+        System.out.println(avatarUrl);
         userRepository.save(user);
     }
 

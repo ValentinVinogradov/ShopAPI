@@ -6,11 +6,12 @@ import com.shopapi.shop.dto.UserResponseDTO;
 import com.shopapi.shop.enums.UUIDTokenType;
 import com.shopapi.shop.impl.UserServiceImpl;
 import com.shopapi.shop.models.User;
+import com.shopapi.shop.models.UserPrincipal;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.UUID;
 
 @RestController
@@ -37,9 +38,10 @@ public class UserController {
     }
 
     @GetMapping("/username")
-    public ResponseEntity<UserResponseDTO> getUserByUsername(Principal principal) {
+    public ResponseEntity<UserResponseDTO> getUserByUsername(
+            @AuthenticationPrincipal UserPrincipal principal) {
         try {
-            User user = userService.getUserByUsername(principal.getName());
+            User user = userService.getUserByUsername(principal.getUsername());
             return ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getUsername()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
@@ -47,10 +49,12 @@ public class UserController {
     }
 
     @PostMapping("/change-username")
-    public ResponseEntity<String> changeUsername(@RequestBody UserFieldsRequestDTO usernameDTO, Principal principal) {
+    public ResponseEntity<String> changeUsername(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody UserFieldsRequestDTO usernameDTO) {
         try {
-            userService.changeUsername(principal.getName(), usernameDTO.newUsername());
-            return ResponseEntity.ok("Username changed for user with name " + principal.getName());
+            userService.changeUsername(principal.getUsername(), usernameDTO.newUsername());
+            return ResponseEntity.ok("Username changed for user with name " + principal.getUsername());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("User with this username already exists");
         } catch (Exception e) {
@@ -69,8 +73,9 @@ public class UserController {
         }
     }
 
+    // без выдачи JWT
     @PostMapping("/check-verify-token")
-    public ResponseEntity<String> checkEmailToken(@RequestBody UserFieldsRequestDTO verifyDTO) {
+    public ResponseEntity<String> checkVerifyToken(@RequestBody UserFieldsRequestDTO verifyDTO) {
         try {
             return ResponseEntity.ok(userService.checkToken(verifyDTO.token(), UUIDTokenType.EMAIL));
         } catch (EntityNotFoundException e) {
@@ -80,6 +85,7 @@ public class UserController {
         }
     }
 
+    // с выдачей JWT
     @PostMapping("/check-signup-token")
     public ResponseEntity<JWTTokenResponseDTO> checkSignUpToken(@RequestBody UserFieldsRequestDTO verifyDTO) {
         try {
@@ -92,9 +98,11 @@ public class UserController {
     }
 
     @PostMapping("/change-email")
-    public ResponseEntity<String> changeEmail(@RequestBody UserFieldsRequestDTO emailDTO, Principal principal) {
+    public ResponseEntity<String> changeEmail(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody UserFieldsRequestDTO emailDTO) {
         try {
-            userService.changeEmail(principal.getName(), emailDTO.newEmail());
+            userService.changeEmail(principal.getUsername(), emailDTO.newEmail());
             return ResponseEntity.ok(userService.generateToken(emailDTO.newEmail(), UUIDTokenType.EMAIL));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to change email");

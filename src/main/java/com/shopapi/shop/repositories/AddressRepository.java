@@ -14,4 +14,5 @@ public interface AddressRepository extends JpaRepository<Address, UUID> {
     @Query("SELECT a FROM Address a WHERE a.user.id = :userId AND a.isActive = true")
     Optional<Address> findActiveAddressByUserId(@Param("userId") UUID userId);
 
+    Optional<Address> findByUser_IdAndId(UUID id, UUID activeAddressId);
 }

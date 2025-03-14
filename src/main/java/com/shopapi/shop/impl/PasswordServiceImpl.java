@@ -52,6 +52,6 @@ public class PasswordServiceImpl implements PasswordService {
         User user = userService.getUserByEmail(email);
         userService.updatePassword(user, passwordEncoder.encode(newPassword));
         tokenService.deleteAllTokensWithTypeByUserId(user.getId(), UUIDTokenType.PASSWORD);
-        userService.revokeAllUserAccessTokens(user);
+        jwtService.revokeAllUserAccessTokens(user);
     }
 }
